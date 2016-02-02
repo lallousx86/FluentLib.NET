@@ -42,6 +42,7 @@ namespace lallouslab.FluentLib.WinForms
             Delete = 0x01,
             Find = 0x02,
             Export = 0x04,
+            CopyAndSelect = 0x08,
             All = 0xff,
             AllNoDelete = All & ~Delete,
         }
@@ -67,7 +68,8 @@ namespace lallouslab.FluentLib.WinForms
             public ToolStripMenuItem DeleteMenu;
         }
 
-        public delegate void delOnGenColItemMenuItem(
+        public delegate bool delOnGenColItemMenuItem(
+            int ColIdx,
             string ColText,
             out object Tag,
             out string Caption);
@@ -85,6 +87,7 @@ namespace lallouslab.FluentLib.WinForms
 
             public delOnGenColItemMenuItem OnGenColItemMenuItem = null;
             public EventHandler OnColItemMenuClick = null;
+            public EventHandler OnAfterDelete = null;
             public delUserFindDialog UserFindDialog = null;
         }
 
@@ -143,7 +146,11 @@ namespace lallouslab.FluentLib.WinForms
 
             lvCtx.lv.BeginUpdate();
             foreach (ListViewItem lvi in lvCtx.lv.SelectedItems)
+            {
+                if (lvCtx.options.OnAfterDelete != null)
+                    lvCtx.options.OnAfterDelete(lvi, e);
                 lvCtx.lv.Items.Remove(lvi);
+            }
 
             lvCtx.lv.EndUpdate();
         }
@@ -255,7 +262,6 @@ namespace lallouslab.FluentLib.WinForms
             lvCtx.SearchPos = 0;
         }
 
-
         private static void menuCommonLV_Closed(
             object sender,
             ToolStripDropDownClosedEventArgs e)
@@ -292,16 +298,22 @@ namespace lallouslab.FluentLib.WinForms
             if (hit.SubItem == null)
                 return;
 
-            int idx = hit.Item.SubItems.IndexOf(hit.SubItem);
+            int ColIdx = hit.Item.SubItems.IndexOf(hit.SubItem);
 
             // Call user callback to get some contextual info
             string MenuText;
             object MenuTag;
 
-            lvCtx.options.OnGenColItemMenuItem(
-                lvi.SubItems[idx].Text,
-                out MenuTag,
-                out MenuText);
+            bool bProceed = lvCtx.options.OnGenColItemMenuItem(
+                                ColIdx,
+                                lvi.SubItems[ColIdx].Text,
+                                out MenuTag,
+                                out MenuText);
+            if (!bProceed)
+            {
+                e.Cancel = true;
+                return;
+            }
 
             // Generate a dynamic menu item
             lvCtx.GenColItemMenu[0] = new ToolStripSeparator();
@@ -375,86 +387,101 @@ namespace lallouslab.FluentLib.WinForms
                 menu = Menu
             };
 
-            // FindFirst
-            Context.FindFirstMenu = new ToolStripMenuItem()
-            {
-                ShortcutKeys = (Keys.Control | System.Windows.Forms.Keys.F),
-                Text = "Find",
-            };
-            Context.FindFirstMenu.Click += new EventHandler(menuCommonLVFindFirst_Click);
+            var DynMenus = new List<ToolStripItem>();
 
-            // FindNext
-            Context.FindNextMenu = new ToolStripMenuItem()
+            if (options.MFlags.HasFlag(MenuFlags.CopyAndSelect))
             {
-                ShortcutKeys = Keys.F3,
-                Text = "Find Next",
-            };
-            Context.FindNextMenu.Click += new EventHandler(menuCommonLVFindNext_Click);
+                // Copy
+                Context.CopyItemMenu = new ToolStripMenuItem()
+                {
+                    ShortcutKeys = (Keys.Control | Keys.C),
+                    Text = "Copy"
+                };
+                Context.CopyItemMenu.Click += new EventHandler(menuCommonLVCopyItem_Click);
 
-            // Copy
-            Context.CopyItemMenu = new ToolStripMenuItem()
-            {
-                ShortcutKeys = (Keys.Control | Keys.C),
-                Text = "Copy"
-            };
-            Context.CopyItemMenu.Click += new EventHandler(menuCommonLVCopyItem_Click);
+                // Select All
+                Context.SelectAllMenu = new ToolStripMenuItem()
+                {
+                    ShortcutKeys = (Keys.Control | Keys.A),
+                    Text = "Select all"
+                };
+                Context.SelectAllMenu.Click += new EventHandler(menuCommonLVSelectAll_Click);
 
-            // Select All
-            Context.SelectAllMenu = new ToolStripMenuItem()
-            {
-                ShortcutKeys = (Keys.Control | Keys.A),
-                Text = "Select all"
-            };
-            Context.SelectAllMenu.Click += new EventHandler(menuCommonLVSelectAll_Click);
-
-            var ExportToTextFile = new ToolStripMenuItem()
-            {
-                ShortcutKeys = (Keys.Control | Keys.S),
-                Text = "Export to text file"
-            };
-            ExportToTextFile.Click += new EventHandler(menuCommonLVExportToTextFile_Click);
-
-            Context.DeleteMenu = new ToolStripMenuItem()
-            {
-                ShortcutKeys = Keys.Delete,
-                Text = "Delete"
-            };
-            Context.DeleteMenu.Click += new EventHandler(menuCommonLVDeleteItem_Click);
+                DynMenus.AddRange(new ToolStripItem[]
+                {
+                    Context.CopyItemMenu,
+                    Context.SelectAllMenu,
+                    new ToolStripSeparator(),
+                });
+            }
 
             if (options.MFlags.HasFlag(MenuFlags.Find))
             {
-                Menu.Items.AddRange(new ToolStripItem[]
+                // FindFirst
+                Context.FindFirstMenu = new ToolStripMenuItem()
                 {
-                    new ToolStripSeparator(),
+                    ShortcutKeys = (Keys.Control | System.Windows.Forms.Keys.F),
+                    Text = "Find",
+                };
+                Context.FindFirstMenu.Click += new EventHandler(menuCommonLVFindFirst_Click);
+
+                // FindNext
+                Context.FindNextMenu = new ToolStripMenuItem()
+                {
+                    ShortcutKeys = Keys.F3,
+                    Text = "Find Next",
+                };
+                Context.FindNextMenu.Click += new EventHandler(menuCommonLVFindNext_Click);
+
+                DynMenus.AddRange(new ToolStripItem[]
+                {
                     Context.FindFirstMenu,
                     Context.FindNextMenu,
+                    new ToolStripSeparator(),
                 });
             }
 
             if (options.MFlags.HasFlag(MenuFlags.Delete))
             {
-                Menu.Items.AddRange(new ToolStripItem[]
+                // Delete
+                Context.DeleteMenu = new ToolStripMenuItem()
                 {
-                    new ToolStripSeparator(),
-                    Context.DeleteMenu
+                    ShortcutKeys = Keys.Delete,
+                    Text = "Delete"
+                };
+                Context.DeleteMenu.Click += new EventHandler(menuCommonLVDeleteItem_Click);
+
+                DynMenus.AddRange(new ToolStripItem[]
+                {
+                    Context.DeleteMenu,
+                    new ToolStripSeparator()
                 });
             }
 
             if (options.MFlags.HasFlag(MenuFlags.Export))
             {
-                Menu.Items.AddRange(new ToolStripItem[]
+                var ExportToTextFile = new ToolStripMenuItem()
                 {
-                    new ToolStripSeparator(),
-                    ExportToTextFile
+                    ShortcutKeys = (Keys.Control | Keys.S),
+                    Text = "Export to text file"
+                };
+                ExportToTextFile.Click += new EventHandler(menuCommonLVExportToTextFile_Click);
+
+                DynMenus.AddRange(new ToolStripItem[]
+                {
+                    ExportToTextFile,
+                    new ToolStripSeparator()
                 });
             }
 
-            Menu.Items.AddRange(new ToolStripItem[]
+            if (DynMenus.Count > 0)
             {
-                new ToolStripSeparator(),
-                Context.CopyItemMenu,
-                Context.SelectAllMenu,
-            });
+                if (DynMenus[DynMenus.Count - 1] is ToolStripSeparator)
+                    DynMenus.RemoveAt(DynMenus.Count - 1);
+
+                foreach (var m in DynMenus)
+                    Menu.Items.Add(m);
+            }
 
             // Dynamic menu to be created based on column item click?
             if (options.OnGenColItemMenuItem != null && options.OnColItemMenuClick != null)

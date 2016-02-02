@@ -21,6 +21,10 @@ namespace WindowsFormsApplication1
 
         private void Form1_Load(object sender, EventArgs e)
         {
+            //Export/ExportToTextFile (by default)
+            //Screen width check before positioning the window
+            //get an icon / icons for the buttons
+
             listView1.BeginUpdate();
             for (int i=0;i<10;i++)
             {
@@ -41,14 +45,7 @@ namespace WindowsFormsApplication1
                 WantColSorting = true
             };
 
-            opt.OnGenColItemMenuItem += delegate (
-                    string ColText,
-                    out object Tag,
-                    out string Caption)
-            {
-                Caption = "Exclude - " + ColText;
-                Tag = null;
-            };
+            opt.OnGenColItemMenuItem += X;
 
             opt.OnColItemMenuClick += delegate (object s, EventArgs ev)
             {
@@ -61,6 +58,17 @@ namespace WindowsFormsApplication1
                 contextMenuStrip1,
                 listView1,
                 opt);
+        }
+
+        private bool X(int ColIdx, string ColText, out object Tag, out string Caption)
+        {
+            Caption = "Exclude - " + ColText;
+            Tag = null;
+
+            if (ColIdx == 0)
+                return false;
+
+            return true;
         }
     }
 }
