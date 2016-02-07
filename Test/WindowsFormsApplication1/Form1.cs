@@ -2,73 +2,50 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
-using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using lallouslab.FluentLib.WinForms;
 
 namespace WindowsFormsApplication1
 {
     public partial class Form1 : Form
     {
+        enum Z
+        {
+            V1,
+            V2,
+            V21,
+            V22,
+            V23,
+            V3,
+            Hi_Whats_Up
+        }
+
         public Form1()
         {
             InitializeComponent();
         }
 
-        private void Form1_Load(object sender, EventArgs e)
+        private void button1_Click(
+            object sender, 
+            EventArgs e)
         {
-            //Export/ExportToTextFile (by default)
-            //Screen width check before positioning the window
-            //get an icon / icons for the buttons
+            var Names = typeof(Z).GetEnumNames();
+            var StartColors = new Color[Names.Length];
+            StartColors[0] = Color.Red;
+            StartColors[1] = Color.Gray;
+            StartColors[2] = Color.Orange;
 
-            listView1.BeginUpdate();
-            for (int i=0;i<10;i++)
+            var f = new lallouslab.FluentLib.WinForms.Dialogs.NamedItemsColorChooser(
+                Names,
+                StartColors)
             {
-                var lvi = new ListViewItem(string.Format("COL0 #{0}", i + 1));
-                lvi.SubItems.AddRange(new string[]
-                    {
-                    string.Format("COL1 #{0}", i + 1),
-                    string.Format("COL2 #{0}", i + 1)
-                    });
-
-                listView1.Items.Add(lvi);
-            }
-            listView1.EndUpdate();
-
-            var opt = new ListViewExtensions.Options()
-            {
-                CopyItemsSeparator = ",",
-                WantColSorting = true
+                Text = "Choose color"
             };
-
-            opt.OnGenColItemMenuItem += X;
-
-            opt.OnColItemMenuClick += delegate (object s, EventArgs ev)
-            {
-                var m = s as ToolStripMenuItem;
-                if (m != null)
-                    UIUtils.MsgBoxInfo("Hello" + m.Text);
-            };
-
-            ListViewExtensions.CreateCommonMenuItems(
-                contextMenuStrip1,
-                listView1,
-                opt);
-        }
-
-        private bool X(int ColIdx, string ColText, out object Tag, out string Caption)
-        {
-            Caption = "Exclude - " + ColText;
-            Tag = null;
-
-            if (ColIdx == 0)
-                return false;
-
-            return true;
+            
+            f.ShowDialog();
         }
     }
 }
