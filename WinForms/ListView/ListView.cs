@@ -54,7 +54,7 @@ namespace lallouslab.FluentLib.WinForms
         {
             internal string FindString;
             internal int SearchPos = 0;
-            internal ToolStripItem[] GenColItemMenu = new ToolStripItem[2] { null, null };
+            internal List<ToolStripItem> GenColItemMenu = new List<ToolStripItem>();
 
             public ContextMenuStrip menu;
             public ListView lv;
@@ -68,11 +68,16 @@ namespace lallouslab.FluentLib.WinForms
             public ToolStripMenuItem DeleteMenu;
         }
 
+        public class UserMenuItem
+        {
+            public object Tag;
+            public string Text;
+        }
+
         public delegate bool delOnGenColItemMenuItem(
             int ColIdx,
             string ColText,
-            out object Tag,
-            out string Caption);
+            out UserMenuItem [] Items);
 
         public delegate string delUserFindDialog(string FindStr);
 
@@ -203,7 +208,7 @@ namespace lallouslab.FluentLib.WinForms
 
             var lv = lvCtx.lv;
 
-            string fn = FileSysDialogs.BrowseFile(
+            string fn = Dialogs.FileSysDialogs.BrowseFile(
                 lvCtx.options.ExportDefaultDirectory?? Path.GetDirectoryName((new FileInfo(System.Reflection.Assembly.GetExecutingAssembly().Location)).FullName),
                 "",
                 lvCtx.options.ExportDefaultExtensions,
@@ -271,8 +276,12 @@ namespace lallouslab.FluentLib.WinForms
             if (lvCtx == null || lvCtx.GenColItemMenu == null)
                 return;
 
+            // Remove the user menus
             foreach (var mi in lvCtx.GenColItemMenu)
                 lvCtx.menu.Items.Remove(mi);
+
+            // Clear the list
+            lvCtx.GenColItemMenu.Clear();
         }
 
         private static void menuCommonLV_Opening(
@@ -286,12 +295,13 @@ namespace lallouslab.FluentLib.WinForms
 
             // Bail out if no items selected
             var lv = lvCtx.lv;
-            if (lv.SelectedItems.Count <= 0)
+            if (lv.SelectedItems.Count == 0)
                 return;
 
             // Get the first selected item
             var lvi = lv.SelectedItems[0];
 
+            //
             // Determine the column index where the click occured
             Point mousePosition = lv.PointToClient(Control.MousePosition);
             ListViewHitTestInfo hit = lv.HitTest(mousePosition);
@@ -300,15 +310,13 @@ namespace lallouslab.FluentLib.WinForms
 
             int ColIdx = hit.Item.SubItems.IndexOf(hit.SubItem);
 
+            //
             // Call user callback to get some contextual info
-            string MenuText;
-            object MenuTag;
-
+            UserMenuItem[] UserMenus;
             bool bProceed = lvCtx.options.OnGenColItemMenuItem(
                                 ColIdx,
                                 lvi.SubItems[ColIdx].Text,
-                                out MenuTag,
-                                out MenuText);
+                                out UserMenus);
             if (!bProceed)
             {
                 e.Cancel = true;
@@ -316,15 +324,21 @@ namespace lallouslab.FluentLib.WinForms
             }
 
             // Generate a dynamic menu item
-            lvCtx.GenColItemMenu[0] = new ToolStripSeparator();
-            lvCtx.GenColItemMenu[1] = new ToolStripMenuItem()
+            lvCtx.GenColItemMenu.Add(new ToolStripSeparator());
+            foreach (var m in UserMenus)
             {
-                Text = MenuText,
-                Tag = MenuTag,
-            };
-            lvCtx.GenColItemMenu[1].Click += lvCtx.options.OnColItemMenuClick;
+                var menu = new ToolStripMenuItem()
+                {
+                    Text = m.Text,
+                    Tag = m.Tag,
+                };
+                menu.Click += lvCtx.options.OnColItemMenuClick;
+                lvCtx.GenColItemMenu.Add(menu);
+            }
 
-            lvCtx.menu.Items.AddRange(lvCtx.GenColItemMenu);
+            // Insert the user menus
+            foreach (var mi in lvCtx.GenColItemMenu)
+                lvCtx.menu.Items.Add(mi);
         }
 
         #endregion
@@ -377,9 +391,12 @@ namespace lallouslab.FluentLib.WinForms
             ListView LV,
             Options options = null)
         {
+            // Use default options if none were passed
             if (options == null)
                 options = new Options();
 
+            //
+            // Create the context
             var Context = new ContextMenuTag()
             {
                 lv = LV,
@@ -389,6 +406,8 @@ namespace lallouslab.FluentLib.WinForms
 
             var DynMenus = new List<ToolStripItem>();
 
+            //
+            // Copy/Select All
             if (options.MFlags.HasFlag(MenuFlags.CopyAndSelect))
             {
                 // Copy
@@ -415,6 +434,8 @@ namespace lallouslab.FluentLib.WinForms
                 });
             }
 
+            //
+            // Find
             if (options.MFlags.HasFlag(MenuFlags.Find))
             {
                 // FindFirst
@@ -441,6 +462,8 @@ namespace lallouslab.FluentLib.WinForms
                 });
             }
 
+            //
+            // Delete
             if (options.MFlags.HasFlag(MenuFlags.Delete))
             {
                 // Delete
@@ -458,6 +481,8 @@ namespace lallouslab.FluentLib.WinForms
                 });
             }
 
+            //
+            // Export
             if (options.MFlags.HasFlag(MenuFlags.Export))
             {
                 var ExportToTextFile = new ToolStripMenuItem()
@@ -474,6 +499,8 @@ namespace lallouslab.FluentLib.WinForms
                 });
             }
 
+            //
+            // Add all the dynamic menu items now
             if (DynMenus.Count > 0)
             {
                 if (DynMenus[DynMenus.Count - 1] is ToolStripSeparator)
@@ -483,17 +510,20 @@ namespace lallouslab.FluentLib.WinForms
                     Menu.Items.Add(m);
             }
 
+            //
             // Dynamic menu to be created based on column item click?
             if (options.OnGenColItemMenuItem != null && options.OnColItemMenuClick != null)
             {
                 Menu.Opening += new CancelEventHandler(menuCommonLV_Opening);
-                Menu.Closed += new ToolStripDropDownClosedEventHandler(menuCommonLV_Closed);
+                Menu.Closed  += new ToolStripDropDownClosedEventHandler(menuCommonLV_Closed);
             }
 
+            //
             // Install column sorter
             if (options.WantColSorting)
                 LV.ColumnClick += new ColumnClickEventHandler(lvCommon_ColumnClick);
 
+            //
             // Associate the context with the tags of the listview and the menu
             Menu.Tag = Context;
             LV.Tag = Context;
