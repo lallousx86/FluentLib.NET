@@ -14,9 +14,9 @@ namespace lallouslab.FluentLib.WinForms.Dialogs
         Color[] m_SelColors = null;
         private ColorDialog clrDlg;
 
-        public Color GetColor(int idx)
+        public Color [] SelColors
         {
-            return m_SelColors[idx];
+            get { return m_SelColors; }
         }
 
         public NamedItemsColorChooser(
@@ -25,7 +25,6 @@ namespace lallouslab.FluentLib.WinForms.Dialogs
         {
             m_Names = Names;
             m_SelColors = StartColors == null || StartColors.Length != Names.Length ? new Color[Names.Length] : StartColors;
-
 
             SuspendLayout();
 

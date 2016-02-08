@@ -26,7 +26,7 @@
 */
 using System.Windows.Forms;
 
-namespace lallouslab.FluentLib.WinForms
+namespace lallouslab.FluentLib.WinForms.Dialogs
 {
     public static class FileSysDialogs
     {

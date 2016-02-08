@@ -19,7 +19,7 @@ namespace WindowsFormsApplication1
             InitializeComponent();
         }
 
-        private void Form1_Load(object sender, EventArgs e)
+        private void ListViewTest_Load(object sender, EventArgs e)
         {
             //Export/ExportToTextFile (by default)
             //Screen width check before positioning the window
@@ -45,13 +45,13 @@ namespace WindowsFormsApplication1
                 WantColSorting = true
             };
 
-            opt.OnGenColItemMenuItem += X;
+            opt.OnGenColItemMenuItem += LVColUserMenuClick;
 
             opt.OnColItemMenuClick += delegate (object s, EventArgs ev)
             {
                 var m = s as ToolStripMenuItem;
                 if (m != null)
-                    UIUtils.MsgBoxInfo("Hello" + m.Text);
+                    UIUtils.MsgBoxInfo("Hello " + m.Text);
             };
 
             ListViewExtensions.CreateCommonMenuItems(
@@ -60,13 +60,20 @@ namespace WindowsFormsApplication1
                 opt);
         }
 
-        private bool X(int ColIdx, string ColText, out object Tag, out string Caption)
+        private bool LVColUserMenuClick(
+            int ColIdx, 
+            string ColText, 
+            out ListViewExtensions.UserMenuItem[] Items)
         {
-            Caption = "Exclude - " + ColText;
-            Tag = null;
-
+            Items = null;
             if (ColIdx == 0)
                 return false;
+
+            Items = new ListViewExtensions.UserMenuItem[]
+            {
+                new ListViewExtensions.UserMenuItem() { Text = "Exclude - " + ColText },
+                new ListViewExtensions.UserMenuItem() { Text = "Include - " + ColText }
+            };
 
             return true;
         }
