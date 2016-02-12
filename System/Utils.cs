@@ -25,6 +25,7 @@
 * ----------------------------------------------------------------------------- 
 */
 using System.IO;
+using System.Runtime.Serialization.Formatters.Binary;
 
 namespace lallouslab.FluentLib.System
 {
@@ -40,6 +41,21 @@ namespace lallouslab.FluentLib.System
         public static string GetCurrentAsmDirectory()
         {
             return Path.GetDirectoryName((new FileInfo(global::System.Reflection.Assembly.GetExecutingAssembly().Location)).FullName);
+        }
+
+        /// <summary>
+        /// http://stackoverflow.com/a/129395
+        /// </summary>
+        public static T DeepClone<T>(T obj)
+        {
+            using (var ms = new MemoryStream())
+            {
+                var formatter = new BinaryFormatter();
+                formatter.Serialize(ms, obj);
+                ms.Position = 0;
+
+                return (T)formatter.Deserialize(ms);
+            }
         }
     }
 }
