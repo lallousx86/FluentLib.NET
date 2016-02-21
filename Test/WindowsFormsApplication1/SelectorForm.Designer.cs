@@ -1,6 +1,6 @@
 ﻿namespace WindowsFormsApplication1
 {
-    partial class Form1
+    partial class SelectorForm
     {
         /// <summary>
         /// Required designer variable.

@@ -5,7 +5,7 @@ VisualStudioVersion = 14.0.24720.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FluentLib.WinForms", "WinForms\FluentLib.WinForms.csproj", "{A78561B5-9165-43DF-8FBE-B73F278820A2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WindowsFormsApplication1", "Test\WindowsFormsApplication1\WindowsFormsApplication1.csproj", "{02D0F326-43BB-4302-8715-79B6287E3E2A}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestWinForms", "Test\WindowsFormsApplication1\TestWinForms.csproj", "{02D0F326-43BB-4302-8715-79B6287E3E2A}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FluentLib.System", "System\FluentLib.System.csproj", "{17DC84BA-22D7-4DD3-81DA-6B04CB902311}"
 EndProject

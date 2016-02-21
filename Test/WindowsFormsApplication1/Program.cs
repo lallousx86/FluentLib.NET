@@ -12,11 +12,20 @@ namespace WindowsFormsApplication1
         /// The main entry point for the application.
         /// </summary>
         [STAThread]
-        static void Main()
+        static void Main(string [] args)
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new Form1());
+            Form f = null;
+            if (args.Length > 0)
+            {
+                string formName = args[0];
+                if (formName.Equals("listviewtest", StringComparison.OrdinalIgnoreCase))
+                    f = new ListViewTestForm();
+            }
+            if (f == null)
+                f = new SelectorForm();
+            Application.Run(f);
         }
     }
 }

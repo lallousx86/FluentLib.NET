@@ -10,7 +10,7 @@ using System.Windows.Forms;
 
 namespace WindowsFormsApplication1
 {
-    public partial class Form1 : Form
+    public partial class SelectorForm : Form
     {
         enum Z
         {
@@ -23,7 +23,7 @@ namespace WindowsFormsApplication1
             Hi_Whats_Up
         }
 
-        public Form1()
+        public SelectorForm()
         {
             InitializeComponent();
         }

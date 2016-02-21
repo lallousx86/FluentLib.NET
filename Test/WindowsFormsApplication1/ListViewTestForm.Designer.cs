@@ -1,6 +1,6 @@
 ﻿namespace WindowsFormsApplication1
 {
-    partial class ListViewTest
+    partial class ListViewTestForm
     {
         /// <summary>
         /// Required designer variable.
@@ -77,33 +77,33 @@
             this.a2ToolStripMenuItem,
             this.toolStripMenuItem1});
             this.contextMenuStrip1.Name = "contextMenuStrip1";
-            this.contextMenuStrip1.Size = new System.Drawing.Size(153, 76);
+            this.contextMenuStrip1.Size = new System.Drawing.Size(89, 54);
             // 
             // a1ToolStripMenuItem
             // 
             this.a1ToolStripMenuItem.Name = "a1ToolStripMenuItem";
-            this.a1ToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.a1ToolStripMenuItem.Size = new System.Drawing.Size(88, 22);
             this.a1ToolStripMenuItem.Text = "A1";
             // 
             // a2ToolStripMenuItem
             // 
             this.a2ToolStripMenuItem.Name = "a2ToolStripMenuItem";
-            this.a2ToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.a2ToolStripMenuItem.Size = new System.Drawing.Size(88, 22);
             this.a2ToolStripMenuItem.Text = "A2";
             // 
             // toolStripMenuItem1
             // 
             this.toolStripMenuItem1.Name = "toolStripMenuItem1";
-            this.toolStripMenuItem1.Size = new System.Drawing.Size(149, 6);
+            this.toolStripMenuItem1.Size = new System.Drawing.Size(85, 6);
             // 
-            // Form1
+            // ListViewTest
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(802, 632);
             this.Controls.Add(this.listView1);
-            this.Name = "Form1";
-            this.Text = "Form1";
+            this.Name = "ListViewTest";
+            this.Text = "ListView Test";
             this.Load += new System.EventHandler(this.ListViewTest_Load);
             this.contextMenuStrip1.ResumeLayout(false);
             this.ResumeLayout(false);

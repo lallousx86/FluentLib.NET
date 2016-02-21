@@ -53,7 +53,7 @@ namespace lallouslab.FluentLib.WinForms
         public class ContextMenuTag
         {
             internal string FindString;
-            internal int SearchPos = 0;
+            internal int SearchPos;
             internal List<ToolStripItem> GenColItemMenu = new List<ToolStripItem>();
 
             public ContextMenuStrip menu;
@@ -89,6 +89,7 @@ namespace lallouslab.FluentLib.WinForms
             public string ExportDefaultFilter = FILTER_TEXT_Filter;
             public string ExportDefaultDirectory;
             public bool WantColSorting = true;
+            public bool FindNextMultiSelect = false;
 
             public delOnGenColItemMenuItem OnGenColItemMenuItem = null;
             public EventHandler OnColItemMenuClick = null;
@@ -234,6 +235,20 @@ namespace lallouslab.FluentLib.WinForms
             }
         }
 
+        private static bool DeselectPreviousSearchPos(ContextMenuTag lvCtx)
+        {
+            bool bDeSelected =
+                   !lvCtx.options.FindNextMultiSelect
+                && lvCtx.SearchPos != 0
+                && (lvCtx.SearchPos - 1) < lvCtx.lv.Items.Count;
+
+            // Deselect previous finding
+            if (bDeSelected)
+                lvCtx.lv.Items[lvCtx.SearchPos - 1].Selected = false;
+
+            return bDeSelected;
+        }
+
         private static void menuCommonLVFindNext_Click(
             object sender,
             EventArgs e)
@@ -242,6 +257,7 @@ namespace lallouslab.FluentLib.WinForms
             if (lvCtx == null)
                 return;
 
+            // No string to lookup?
             if (string.IsNullOrEmpty(lvCtx.FindString))
                 return;
 
@@ -250,13 +266,18 @@ namespace lallouslab.FluentLib.WinForms
                 ListViewItem lvi = lvCtx.lv.Items[i];
                 foreach (ListViewItem.ListViewSubItem lvsi in lvi.SubItems)
                 {
+                    // Deselect current search items (in case it was previously selected)
                     lvi.Selected = false;
+
                     if (lvsi.Text.IndexOf(lvCtx.FindString, StringComparison.OrdinalIgnoreCase) != -1)
                     {
+                        DeselectPreviousSearchPos(lvCtx);
+
                         lvi.Selected = true;
                         lvi.EnsureVisible();
                         lvCtx.lv.FocusedItem = lvi;
 
+                        // Remember the search position so search next works properly
                         lvCtx.SearchPos = i + 1;
                         return;
                     }
@@ -264,6 +285,8 @@ namespace lallouslab.FluentLib.WinForms
             }
 
             // Nothing found, reset search position
+            DeselectPreviousSearchPos(lvCtx);
+
             lvCtx.SearchPos = 0;
         }
 

@@ -12,9 +12,9 @@ using lallouslab.FluentLib.WinForms;
 
 namespace WindowsFormsApplication1
 {
-    public partial class ListViewTest : Form
+    public partial class ListViewTestForm : Form
     {
-        public ListViewTest()
+        public ListViewTestForm()
         {
             InitializeComponent();
         }
@@ -24,18 +24,21 @@ namespace WindowsFormsApplication1
             //Export/ExportToTextFile (by default)
             //Screen width check before positioning the window
             //get an icon / icons for the buttons
-
             listView1.BeginUpdate();
-            for (int i=0;i<10;i++)
+
+            // Repeat the same items to test the FindNext functionality
+            for (int iRepeat=1;iRepeat<=2;iRepeat++)
             {
-                var lvi = new ListViewItem(string.Format("COL0 #{0}", i + 1));
-                lvi.SubItems.AddRange(new string[]
-                    {
+                for (int i = 0; i < 10; i++)
+                {
+                    var lvi = new ListViewItem(string.Format("COL0 #{0}", i + 1));
+                    lvi.SubItems.AddRange(new string[]
+                        {
                     string.Format("COL1 #{0}", i + 1),
                     string.Format("COL2 #{0}", i + 1)
-                    });
-
-                listView1.Items.Add(lvi);
+                        });
+                    listView1.Items.Add(lvi);
+                }
             }
             listView1.EndUpdate();
 
