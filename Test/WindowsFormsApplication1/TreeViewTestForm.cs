@@ -7,11 +7,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using lallouslab.FluentLib.WinForms.TreeView;
 
 namespace WindowsFormsApplication1
 {
     public partial class TreeViewTestForm : Form
     {
+        private TreeViewNodesManipulationAdditions tvExt;
+
         public TreeViewTestForm()
         {
             InitializeComponent();
@@ -21,6 +24,23 @@ namespace WindowsFormsApplication1
             object sender, 
             EventArgs e)
         {
+            tvExt = new TreeViewNodesManipulationAdditions()
+            {
+                tv = treeView1,
+                bWantMenu = true,
+                bWantDragDrop = true,
+                WantedActions = new List<TVNMA_ActionOptions>()
+                {
+                    TVNMA_ActionOptions.Indent,
+                    TVNMA_ActionOptions.UnIndent,
+                    TVNMA_ActionOptions.MoveAbove,
+                    TVNMA_ActionOptions.MoveBelow,
+                    TVNMA_ActionOptions.AddAbove,
+                    TVNMA_ActionOptions.AddBelow
+                }
+            };
+            tvExt.Attach();
+
             PopulateTree(treeView1);
         }
 
