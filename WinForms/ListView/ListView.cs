@@ -30,7 +30,7 @@ using System.ComponentModel;
 using System.Drawing;
 using System.IO;
 using System.Text;
-using System.Windows.Forms;
+using MSWinForms = global::System.Windows.Forms;
 
 namespace lallouslab.FluentLib.WinForms
 {
@@ -54,18 +54,18 @@ namespace lallouslab.FluentLib.WinForms
         {
             internal string FindString;
             internal int SearchPos;
-            internal List<ToolStripItem> GenColItemMenu = new List<ToolStripItem>();
+            internal List<MSWinForms.ToolStripItem> GenColItemMenu = new List<MSWinForms.ToolStripItem>();
 
-            public ContextMenuStrip menu;
-            public ListView lv;
+            public MSWinForms.ContextMenuStrip menu;
+            public MSWinForms.ListView lv;
 
             public Options options;
 
-            public ToolStripMenuItem FindFirstMenu;
-            public ToolStripMenuItem FindNextMenu;
-            public ToolStripMenuItem CopyItemMenu;
-            public ToolStripMenuItem SelectAllMenu;
-            public ToolStripMenuItem DeleteMenu;
+            public MSWinForms.ToolStripMenuItem FindFirstMenu;
+            public MSWinForms.ToolStripMenuItem FindNextMenu;
+            public MSWinForms.ToolStripMenuItem CopyItemMenu;
+            public MSWinForms.ToolStripMenuItem SelectAllMenu;
+            public MSWinForms.ToolStripMenuItem DeleteMenu;
         }
 
         public class UserMenuItem
@@ -99,22 +99,22 @@ namespace lallouslab.FluentLib.WinForms
 
         #region Extension methods
         public static string GetItemsString(
-            this ListViewItem lvi,
+            this MSWinForms.ListViewItem lvi,
             string SurroundL = "\"",
             string SurroundR = "\"",
             string Join = "\t")
         {
             List<string> s = new List<string>();
-            foreach (System.Windows.Forms.ListViewItem.ListViewSubItem CurSub in lvi.SubItems)
+            foreach (MSWinForms.ListViewItem.ListViewSubItem CurSub in lvi.SubItems)
                 s.Add(string.Format("{0}{1}{2}", SurroundL, CurSub.Text, SurroundR));
 
             return string.Join(Join, s);
         }
         public static void SelectAll(
-            this System.Windows.Forms.ListView lv)
+            this MSWinForms.ListView lv)
         {
             lv.BeginUpdate();
-            foreach (System.Windows.Forms.ListViewItem lvi in lv.Items)
+            foreach (MSWinForms.ListViewItem lvi in lv.Items)
                 lvi.Selected = true;
             lv.EndUpdate();
         }
@@ -131,15 +131,15 @@ namespace lallouslab.FluentLib.WinForms
                 return;
 
             var sb = new StringBuilder();
-            foreach (ListViewItem lvi in lvCtx.lv.SelectedItems)
+            foreach (MSWinForms.ListViewItem lvi in lvCtx.lv.SelectedItems)
                 sb.AppendLine(lvi.GetItemsString(Join: " "));
 
             string str = sb.ToString();
             if (string.IsNullOrEmpty(str))
                 return;
 
-            Clipboard.Clear();
-            Clipboard.SetText(str);
+            MSWinForms.Clipboard.Clear();
+            MSWinForms.Clipboard.SetText(str);
         }
 
         private static void menuCommonLVDeleteItem_Click(
@@ -151,7 +151,7 @@ namespace lallouslab.FluentLib.WinForms
                 return;
 
             lvCtx.lv.BeginUpdate();
-            foreach (ListViewItem lvi in lvCtx.lv.SelectedItems)
+            foreach (MSWinForms.ListViewItem lvi in lvCtx.lv.SelectedItems)
             {
                 if (lvCtx.options.OnAfterDelete != null)
                     lvCtx.options.OnAfterDelete(lvi, e);
@@ -210,7 +210,7 @@ namespace lallouslab.FluentLib.WinForms
             var lv = lvCtx.lv;
 
             string fn = Dialogs.FileSysDialogs.BrowseFile(
-                lvCtx.options.ExportDefaultDirectory?? Path.GetDirectoryName((new FileInfo(System.Reflection.Assembly.GetExecutingAssembly().Location)).FullName),
+                lvCtx.options.ExportDefaultDirectory?? Path.GetDirectoryName((new FileInfo(global::System.Reflection.Assembly.GetExecutingAssembly().Location)).FullName),
                 "",
                 lvCtx.options.ExportDefaultExtensions,
                 lvCtx.options.ExportDefaultFilter,
@@ -218,17 +218,17 @@ namespace lallouslab.FluentLib.WinForms
             if (string.IsNullOrEmpty(fn))
                 return;
 
-            using (TextWriter Out = new System.IO.StreamWriter(fn, false))
+            using (TextWriter Out = new global::System.IO.StreamWriter(fn, false))
             {
                 // Write column header
-                foreach (ColumnHeader Cur in lv.Columns)
+                foreach (MSWinForms.ColumnHeader Cur in lv.Columns)
                 {
                     Out.Write("\"" + Cur.Text + "\"");
                     Out.Write(lvCtx.options.CopyItemsSeparator);
                 }
                 Out.WriteLine();
 
-                foreach (ListViewItem Item in lv.Items)
+                foreach (MSWinForms.ListViewItem Item in lv.Items)
                     Out.WriteLine(Item.GetItemsString());
 
                 Out.Close();
@@ -263,8 +263,8 @@ namespace lallouslab.FluentLib.WinForms
 
             for (int i = lvCtx.SearchPos, c = lvCtx.lv.Items.Count; i < c; i++)
             {
-                ListViewItem lvi = lvCtx.lv.Items[i];
-                foreach (ListViewItem.ListViewSubItem lvsi in lvi.SubItems)
+                MSWinForms.ListViewItem lvi = lvCtx.lv.Items[i];
+                foreach (MSWinForms.ListViewItem.ListViewSubItem lvsi in lvi.SubItems)
                 {
                     // Deselect current search items (in case it was previously selected)
                     lvi.Selected = false;
@@ -292,7 +292,7 @@ namespace lallouslab.FluentLib.WinForms
 
         private static void menuCommonLV_Closed(
             object sender,
-            ToolStripDropDownClosedEventArgs e)
+            MSWinForms.ToolStripDropDownClosedEventArgs e)
         {
             // Get context
             var lvCtx = GetCommonLVContext(sender);
@@ -326,8 +326,8 @@ namespace lallouslab.FluentLib.WinForms
 
             //
             // Determine the column index where the click occured
-            Point mousePosition = lv.PointToClient(Control.MousePosition);
-            ListViewHitTestInfo hit = lv.HitTest(mousePosition);
+            Point mousePosition = lv.PointToClient(MSWinForms.Control.MousePosition);
+            MSWinForms.ListViewHitTestInfo hit = lv.HitTest(mousePosition);
             if (hit.SubItem == null)
                 return;
 
@@ -347,10 +347,10 @@ namespace lallouslab.FluentLib.WinForms
             }
 
             // Generate a dynamic menu item
-            lvCtx.GenColItemMenu.Add(new ToolStripSeparator());
+            lvCtx.GenColItemMenu.Add(new MSWinForms.ToolStripSeparator());
             foreach (var m in UserMenus)
             {
-                var menu = new ToolStripMenuItem()
+                var menu = new MSWinForms.ToolStripMenuItem()
                 {
                     Text = m.Text,
                     Tag = m.Tag,
@@ -369,7 +369,7 @@ namespace lallouslab.FluentLib.WinForms
         #region LV handlers
         private static void lvCommon_ColumnClick(
            object sender,
-           ColumnClickEventArgs e)
+           MSWinForms.ColumnClickEventArgs e)
         {
             var lvCtx = GetCommonLVContext(sender);
             if (lvCtx == null)
@@ -397,12 +397,12 @@ namespace lallouslab.FluentLib.WinForms
         private static ContextMenuTag GetCommonLVContext(object sender)
         {
             object Tag = null;
-            if (sender is ToolStripMenuItem)
-                Tag = (sender as ToolStripMenuItem).Owner.Tag;
-            else if (sender is ListView)
-                Tag = (sender as ListView).Tag;
-            else if (sender is ContextMenuStrip)
-                Tag = (sender as ContextMenuStrip).Tag;
+            if (sender is MSWinForms.ToolStripMenuItem)
+                Tag = (sender as MSWinForms.ToolStripMenuItem).Owner.Tag;
+            else if (sender is MSWinForms.ListView)
+                Tag = (sender as MSWinForms.ListView).Tag;
+            else if (sender is MSWinForms.ContextMenuStrip)
+                Tag = (sender as MSWinForms.ContextMenuStrip).Tag;
 
             return Tag as ContextMenuTag;
         }
@@ -410,8 +410,8 @@ namespace lallouslab.FluentLib.WinForms
 
         #region Public methods
         public static ContextMenuTag CreateCommonMenuItems(
-            ContextMenuStrip Menu,
-            ListView LV,
+            MSWinForms.ContextMenuStrip Menu,
+            MSWinForms.ListView LV,
             Options options = null)
         {
             // Use default options if none were passed
@@ -427,33 +427,33 @@ namespace lallouslab.FluentLib.WinForms
                 menu = Menu
             };
 
-            var DynMenus = new List<ToolStripItem>();
+            var DynMenus = new List<MSWinForms.ToolStripItem>();
 
             //
             // Copy/Select All
             if (options.MFlags.HasFlag(MenuFlags.CopyAndSelect))
             {
                 // Copy
-                Context.CopyItemMenu = new ToolStripMenuItem()
+                Context.CopyItemMenu = new MSWinForms.ToolStripMenuItem()
                 {
-                    ShortcutKeys = (Keys.Control | Keys.C),
+                    ShortcutKeys = (MSWinForms.Keys.Control | MSWinForms.Keys.C),
                     Text = "Copy"
                 };
                 Context.CopyItemMenu.Click += new EventHandler(menuCommonLVCopyItem_Click);
 
                 // Select All
-                Context.SelectAllMenu = new ToolStripMenuItem()
+                Context.SelectAllMenu = new MSWinForms.ToolStripMenuItem()
                 {
-                    ShortcutKeys = (Keys.Control | Keys.A),
+                    ShortcutKeys = (MSWinForms.Keys.Control | MSWinForms.Keys.A),
                     Text = "Select all"
                 };
                 Context.SelectAllMenu.Click += new EventHandler(menuCommonLVSelectAll_Click);
 
-                DynMenus.AddRange(new ToolStripItem[]
+                DynMenus.AddRange(new MSWinForms.ToolStripItem[]
                 {
                     Context.CopyItemMenu,
                     Context.SelectAllMenu,
-                    new ToolStripSeparator(),
+                    new MSWinForms.ToolStripSeparator(),
                 });
             }
 
@@ -462,26 +462,26 @@ namespace lallouslab.FluentLib.WinForms
             if (options.MFlags.HasFlag(MenuFlags.Find))
             {
                 // FindFirst
-                Context.FindFirstMenu = new ToolStripMenuItem()
+                Context.FindFirstMenu = new MSWinForms.ToolStripMenuItem()
                 {
-                    ShortcutKeys = (Keys.Control | System.Windows.Forms.Keys.F),
+                    ShortcutKeys = (MSWinForms.Keys.Control | MSWinForms.Keys.F),
                     Text = "Find",
                 };
                 Context.FindFirstMenu.Click += new EventHandler(menuCommonLVFindFirst_Click);
 
                 // FindNext
-                Context.FindNextMenu = new ToolStripMenuItem()
+                Context.FindNextMenu = new MSWinForms.ToolStripMenuItem()
                 {
-                    ShortcutKeys = Keys.F3,
+                    ShortcutKeys = MSWinForms.Keys.F3,
                     Text = "Find Next",
                 };
                 Context.FindNextMenu.Click += new EventHandler(menuCommonLVFindNext_Click);
 
-                DynMenus.AddRange(new ToolStripItem[]
+                DynMenus.AddRange(new MSWinForms.ToolStripItem[]
                 {
                     Context.FindFirstMenu,
                     Context.FindNextMenu,
-                    new ToolStripSeparator(),
+                    new MSWinForms.ToolStripSeparator(),
                 });
             }
 
@@ -490,17 +490,17 @@ namespace lallouslab.FluentLib.WinForms
             if (options.MFlags.HasFlag(MenuFlags.Delete))
             {
                 // Delete
-                Context.DeleteMenu = new ToolStripMenuItem()
+                Context.DeleteMenu = new MSWinForms.ToolStripMenuItem()
                 {
-                    ShortcutKeys = Keys.Delete,
+                    ShortcutKeys = MSWinForms.Keys.Delete,
                     Text = "Delete"
                 };
                 Context.DeleteMenu.Click += new EventHandler(menuCommonLVDeleteItem_Click);
 
-                DynMenus.AddRange(new ToolStripItem[]
+                DynMenus.AddRange(new MSWinForms.ToolStripItem[]
                 {
                     Context.DeleteMenu,
-                    new ToolStripSeparator()
+                    new MSWinForms.ToolStripSeparator()
                 });
             }
 
@@ -508,17 +508,17 @@ namespace lallouslab.FluentLib.WinForms
             // Export
             if (options.MFlags.HasFlag(MenuFlags.Export))
             {
-                var ExportToTextFile = new ToolStripMenuItem()
+                var ExportToTextFile = new MSWinForms.ToolStripMenuItem()
                 {
-                    ShortcutKeys = (Keys.Control | Keys.S),
+                    ShortcutKeys = (MSWinForms.Keys.Control | MSWinForms.Keys.S),
                     Text = "Export to text file"
                 };
                 ExportToTextFile.Click += new EventHandler(menuCommonLVExportToTextFile_Click);
 
-                DynMenus.AddRange(new ToolStripItem[]
+                DynMenus.AddRange(new MSWinForms.ToolStripItem[]
                 {
                     ExportToTextFile,
-                    new ToolStripSeparator()
+                    new MSWinForms.ToolStripSeparator()
                 });
             }
 
@@ -526,7 +526,7 @@ namespace lallouslab.FluentLib.WinForms
             // Add all the dynamic menu items now
             if (DynMenus.Count > 0)
             {
-                if (DynMenus[DynMenus.Count - 1] is ToolStripSeparator)
+                if (DynMenus[DynMenus.Count - 1] is MSWinForms.ToolStripSeparator)
                     DynMenus.RemoveAt(DynMenus.Count - 1);
 
                 foreach (var m in DynMenus)
@@ -538,13 +538,13 @@ namespace lallouslab.FluentLib.WinForms
             if (options.OnGenColItemMenuItem != null && options.OnColItemMenuClick != null)
             {
                 Menu.Opening += new CancelEventHandler(menuCommonLV_Opening);
-                Menu.Closed  += new ToolStripDropDownClosedEventHandler(menuCommonLV_Closed);
+                Menu.Closed  += new MSWinForms.ToolStripDropDownClosedEventHandler(menuCommonLV_Closed);
             }
 
             //
             // Install column sorter
             if (options.WantColSorting)
-                LV.ColumnClick += new ColumnClickEventHandler(lvCommon_ColumnClick);
+                LV.ColumnClick += new MSWinForms.ColumnClickEventHandler(lvCommon_ColumnClick);
 
             //
             // Associate the context with the tags of the listview and the menu

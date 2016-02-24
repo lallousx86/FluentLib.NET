@@ -5,7 +5,7 @@
         /// <summary>
         /// Required designer variable.
         /// </summary>
-        private System.ComponentModel.IContainer components = null;
+        private global::System.ComponentModel.IContainer components = null;
 
         /// <summary>
         /// Clean up any resources being used.
@@ -21,7 +21,7 @@
                 }
                 if (content != null)
                 {
-                    System.Windows.Forms.Control _content = content;
+                    global::System.Windows.Forms.Control _content = content;
                     content = null;
                     _content.Dispose();
                 }
@@ -37,7 +37,7 @@
         /// </summary>
         private void InitializeComponent()
         {
-            components = new System.ComponentModel.Container();
+            components = new global::System.ComponentModel.Container();
         }
 
         #endregion

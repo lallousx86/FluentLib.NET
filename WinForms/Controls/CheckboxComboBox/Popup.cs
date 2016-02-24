@@ -276,10 +276,9 @@ namespace lallouslab.FluentLib.WinForms.PresentationControls
             for (int i = 1; i <= frames; i++)
             {
                 if (i > 1)
-                {
-                    System.Threading.Thread.Sleep(frameduration);
-                }
-                Opacity = opacity * (double)i / (double)frames;
+                    global::System.Threading.Thread.Sleep(frameduration);
+
+                Opacity = opacity * i / frames;
             }
             Opacity = opacity;
         }
