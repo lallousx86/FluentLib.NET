@@ -47,32 +47,58 @@ namespace lallouslab.FluentLib.WinForms.TreeView
     {
         None = 0x00,
 
-        Add_Above = 0x01, // Alt+Shift+Insert
-        Add_Below = 0x02, // Alt+Insert
-        Add_Both = Add_Above | Add_Below,
+        Add_Above           = 0x01,
+        Add_Below           = 0x02,
+        Add_Both            = Add_Above | Add_Below,
 
-        Move_Above = 0x04,
-        Move_Below = 0x08,
-        Move_Both = Move_Above | Move_Below,
+        Move_Above          = 0x04,
+        Move_Below          = 0x08,
+        Move_Both           = Move_Above | Move_Below,
 
-        Move_Into_Top = 0x10,
-        Move_Into_Bottom = 0x20,
-        Move_Into_Both = Move_Into_Top | Move_Into_Bottom,
+        Move_Into_Top       = 0x10,
+        Move_Into_Bottom    = 0x20,
+        Move_Into_Both      = Move_Into_Top | Move_Into_Bottom,
 
-        Indent = 0x40, // Alt+Right
-        UnIndent = 0x80, // Alt+Left
-        Indent_Both = Indent | UnIndent,
+        Indent              = 0x40,
+        UnIndent            = 0x80,
+        Indent_Both         = Indent | UnIndent,
+
+        Rename              = 0x100,
+        Delete              = 0x200,
+
+        RenOrDel            = Rename | Delete,
+
+        // Internal flag
+        Internal            = 0x400,
 
         // All actions
-        All = Add_Both | Move_Both |
-                           Move_Into_Both | Indent_Both
+        All                 = Add_Both       | Move_Both |
+                              Move_Into_Both | Indent_Both |
+                              Rename         | Delete,
     }
 
-    public class TVNMA_ActionsArgs
+    public class TVNMA_ActionArgs
     {
         public TVNMA_Actions Action = TVNMA_Actions.None;
+        public object Tag;
         public TreeNode SrcNode;
         public TreeNode DestNode;
+
+        public string TextNew;
+        public string TextOld;
+
+        public TVNMA_ActionArgs Clone()
+        {
+            return new TVNMA_ActionArgs()
+            {
+                Action = Action,
+                Tag = Tag,
+                SrcNode = SrcNode,
+                DestNode = DestNode,
+                TextNew = TextNew,
+                TextOld = TextOld
+            };
+        }
     }
 
     public class TVNMA_ActionOptions
@@ -185,15 +211,41 @@ namespace lallouslab.FluentLib.WinForms.TreeView
                 };
             }
         }
+
+        public static TVNMA_ActionOptions Rename
+        {
+            get
+            {
+                return new TVNMA_ActionOptions()
+                {
+                    MenuText = "&Rename",
+                    Shortcut = Keys.F2,
+                    Action = TVNMA_Actions.Rename
+                };
+            }
+        }
+
+        public static TVNMA_ActionOptions Delete
+        {
+            get
+            {
+                return new TVNMA_ActionOptions()
+                {
+                    MenuText = "&Delete",
+                    Shortcut = Keys.Delete,
+                    Action = TVNMA_Actions.Delete
+                };
+            }
+        }
     }
 
-    public delegate bool TVNMA_OnAction(TVNMA_ActionsArgs Args);
+    public delegate bool TVNMA_OnAction(TVNMA_ActionArgs Args);
 
     public class TreeViewNodesManipulationAdditions
     {
         private readonly Type TV_NODE = typeof(TreeNode);
         #region User arguments
-        TVNMA_OnAction OnAfterAction, OnBeforeAction;
+        public TVNMA_OnAction OnAfterAction, OnBeforeAction;
         public System.Windows.Forms.TreeView tv;
         public ContextMenuStrip Menu;
         public long nAutoExpandMS = 0;
@@ -341,7 +393,7 @@ namespace lallouslab.FluentLib.WinForms.TreeView
                 var SrcParent = SrcTreeNode.Parent;
 
                 // Create a TreeNode Action
-                var Args = new TVNMA_ActionsArgs()
+                var Args = new TVNMA_ActionArgs()
                 {
                     SrcNode = SrcTreeNode,
                     DestNode = DestTreeNode
@@ -403,25 +455,6 @@ namespace lallouslab.FluentLib.WinForms.TreeView
             });
         }
 
-        private DragDropEffects GetDragEffectFromKeyState(int KeyState)
-        {
-            /*
-            1 (bit 0)   The left mouse button. 
-            2 (bit 1)   The right mouse button. 
-            16 (bit 4)  The middle mouse button. 
-            32 (bit 5)  The ALT key. 
-            */
-
-            // 8 (bit 3)   The CTRL key. 
-            m_bDragInto = (KeyState & 8) != 0;
-
-            // 4 (bit 2)   The SHIFT key. 
-            m_bDragAbove = (KeyState & 4) != 0;
-
-            return m_bDragAbove ? DragDropEffects.Link :
-                   (m_bDragInto ? DragDropEffects.Copy : DragDropEffects.Move);
-        }
-
         private void CreateMenuItems()
         {
             m_AllActions = TVNMA_Actions.None;
@@ -464,13 +497,11 @@ namespace lallouslab.FluentLib.WinForms.TreeView
             {
                 Opts.MenuItem.Click += new EventHandler(delegate (object o, EventArgs ev)
                 {
-                    var Args = new TVNMA_ActionsArgs()
+                    CarryTVNodeAction(new TVNMA_ActionArgs()
                     {
                         Action = TVNMA_Actions.Indent,
                         SrcNode = tv.SelectedNode
-                    };
-
-                    CarryTVNodeAction(Args);
+                    });
                 });
                 m_AllMenuItems.Add(Opts.MenuItem);
             }
@@ -479,13 +510,11 @@ namespace lallouslab.FluentLib.WinForms.TreeView
             {
                 Opts.MenuItem.Click += new EventHandler(delegate (object o, EventArgs ev)
                 {
-                    var Args = new TVNMA_ActionsArgs()
+                    CarryTVNodeAction(new TVNMA_ActionArgs()
                     {
                         Action = TVNMA_Actions.UnIndent,
                         SrcNode = tv.SelectedNode
-                    };
-
-                    CarryTVNodeAction(Args);
+                    });
                 });
                 m_AllMenuItems.Add(Opts.MenuItem);
             }
@@ -500,14 +529,11 @@ namespace lallouslab.FluentLib.WinForms.TreeView
             {
                 Opts.MenuItem.Click += new EventHandler(delegate (object o, EventArgs ev)
                 {
-                    var Args = new TVNMA_ActionsArgs()
+                    CarryTVNodeAction(new TVNMA_ActionArgs()
                     {
                         Action = TVNMA_Actions.Add_Above,
                         SrcNode = tv.SelectedNode
-                    };
-
-                    //;!TODO
-                    CarryTVNodeAction(Args);
+                    });
                 });
                 m_AllMenuItems.Add(Opts.MenuItem);
             }
@@ -516,13 +542,11 @@ namespace lallouslab.FluentLib.WinForms.TreeView
             {
                 Opts.MenuItem.Click += new EventHandler(delegate (object o, EventArgs ev)
                 {
-                    var Args = new TVNMA_ActionsArgs()
+                    CarryTVNodeAction(new TVNMA_ActionArgs()
                     {
                         Action = TVNMA_Actions.Add_Below,
                         SrcNode = tv.SelectedNode
-                    };
-                    //;!TODO
-                    CarryTVNodeAction(Args);
+                    });
                 });
                 m_AllMenuItems.Add(Opts.MenuItem);
             }
@@ -537,7 +561,7 @@ namespace lallouslab.FluentLib.WinForms.TreeView
             {
                 Opts.MenuItem.Click += new EventHandler(delegate (object o, EventArgs ev)
                 {
-                    var Args = new TVNMA_ActionsArgs()
+                    var Args = new TVNMA_ActionArgs()
                     {
                         Action = TVNMA_Actions.Move_Above,
                         SrcNode = tv.SelectedNode,
@@ -553,7 +577,7 @@ namespace lallouslab.FluentLib.WinForms.TreeView
             {
                 Opts.MenuItem.Click += new EventHandler(delegate (object o, EventArgs ev)
                 {
-                    var Args = new TVNMA_ActionsArgs()
+                    var Args = new TVNMA_ActionArgs()
                     {
                         Action = TVNMA_Actions.Move_Below,
                         SrcNode = tv.SelectedNode,
@@ -569,6 +593,38 @@ namespace lallouslab.FluentLib.WinForms.TreeView
                 AddSep();
 
             //
+            // Add Rename/Delete
+            //
+            if (_acts.TryGetValue(TVNMA_Actions.Rename, out Opts))
+            {
+                Opts.MenuItem.Click += new EventHandler(delegate (object o, EventArgs ev)
+                {
+                    CarryTVNodeAction(new TVNMA_ActionArgs()
+                    {
+                        Action = TVNMA_Actions.Rename,
+                        SrcNode = tv.SelectedNode
+                    });
+                });
+                m_AllMenuItems.Add(Opts.MenuItem);
+            }
+
+            if (_acts.TryGetValue(TVNMA_Actions.Delete, out Opts))
+            {
+                Opts.MenuItem.Click += new EventHandler(delegate (object o, EventArgs ev)
+                {
+                    CarryTVNodeAction(new TVNMA_ActionArgs()
+                    {
+                        Action = TVNMA_Actions.Delete,
+                        SrcNode = tv.SelectedNode
+                    });
+                });
+                m_AllMenuItems.Add(Opts.MenuItem);
+            }
+
+            if (m_AllActions.HasFlag(TVNMA_Actions.RenOrDel))
+                AddSep();
+
+            //
             // Add all the menu items
             //
             if (m_AllMenuItems[m_AllMenuItems.Count - 1] is ToolStripSeparator)
@@ -580,23 +636,68 @@ namespace lallouslab.FluentLib.WinForms.TreeView
             tv.ContextMenuStrip = Menu;
         }
 
-        private bool CarryTVNodeAction(
-            TVNMA_ActionsArgs Args)
+        private DragDropEffects GetDragEffectFromKeyState(int KeyState)
         {
-            if (!DoOnBeforeAction(Args))
+            /*
+            1 (bit 0)   The left mouse button. 
+            2 (bit 1)   The right mouse button. 
+            16 (bit 4)  The middle mouse button. 
+            32 (bit 5)  The ALT key. 
+            */
+
+            // 8 (bit 3)   The CTRL key. 
+            m_bDragInto = (KeyState & 8) != 0;
+
+            // 4 (bit 2)   The SHIFT key. 
+            m_bDragAbove = (KeyState & 4) != 0;
+
+            return m_bDragAbove ? DragDropEffects.Link :
+                   (m_bDragInto ? DragDropEffects.Copy : DragDropEffects.Move);
+        }
+
+        private bool CarryTVNodeAction(
+            TVNMA_ActionArgs Args)
+        {
+            // SrcNode should always be not null
+            if (Args.SrcNode == null)
+                return false;
+
+            // Capture old title before calling the callback
+            Args.TextOld = Args.SrcNode.Text;
+
+            // Internal flag allows us to call this function recursively if needed.
+            bool bInternal = Args.Action.HasFlag(TVNMA_Actions.Internal);
+            if (!bInternal && !DoOnBeforeAction(Args))
                 return false;
 
             var tv = Args.SrcNode.TreeView;
 
             TreeNode PrevParent = Args.SrcNode.Parent == null ? tv.TopNode : Args.SrcNode.Parent;
 
+            // Clear the internal flag
+            Args.Action &= ~TVNMA_Actions.Internal;
             switch (Args.Action)
             {
-                case TVNMA_Actions.Add_Above:
+                case TVNMA_Actions.Rename:
+                    Args.SrcNode.Text = Args.TextNew;
                     break;
 
-                case TVNMA_Actions.Add_Below:
+                case TVNMA_Actions.Add_Both:
+                {
+                    // Create new node with the desired title.
+                    // (No need to insert the node into the tree since it will be moved.)
+                    Args.DestNode = new TreeNode(Args.TextNew);
+
+                    // Move the node above
+                    Args.DestNode.MoveAboveOrBelow(
+                        Args.SrcNode,
+                        bAbove: Args.Action == TVNMA_Actions.Add_Above);
                     break;
+                }
+
+                case TVNMA_Actions.Add_Above:
+                case TVNMA_Actions.Add_Below:
+                    goto case TVNMA_Actions.Add_Both;
 
                 case TVNMA_Actions.Move_Above:
                     Args.SrcNode.MoveAboveOrBelow(
@@ -629,31 +730,60 @@ namespace lallouslab.FluentLib.WinForms.TreeView
                 case TVNMA_Actions.UnIndent:
                     Args.SrcNode.UnIndent();
                     break;
+
+                case TVNMA_Actions.Delete:
+                {
+                    // Elect the new selected node after deleltion
+                    
+                    // NextNode?
+                    Args.DestNode = Args.SrcNode.NextNode;
+                    
+                    // PrevNode?
+                    if (Args.DestNode == null)
+                        Args.DestNode = Args.SrcNode.PrevNode;
+
+                    // Parent?
+                    if (Args.DestNode == null)
+                        Args.DestNode = Args.SrcNode.Parent;
+
+                    // Delete the node
+                    Args.SrcNode.Remove();
+
+                    // Also clear the node reference so the caller knows
+                    Args.SrcNode = null;
+
+                    break;
+                }
+
                 default:
                     return false;
             }
 
-            tv.SelectedNode = Args.SrcNode;
+            TreeNode VisSrcNode = (Args.Action == TVNMA_Actions.Delete) ? Args.DestNode : Args.SrcNode;
 
-            // Set new parent
-            if (Args.SrcNode.Parent == null && tv.TopNode != null)
-                tv.TopNode.SetAutoImageIndex();
-            else
-                Args.SrcNode.Parent.SetAutoImageIndex();
+            if (VisSrcNode != null)
+            {
+                tv.SelectedNode = VisSrcNode;
+
+                // Set new parent
+                if (VisSrcNode.Parent == null && tv.TopNode != null)
+                    tv.TopNode.SetAutoImageIndex();
+                else
+                    VisSrcNode.Parent.SetAutoImageIndex();
+            }
 
             if (PrevParent != null)
                 PrevParent.SetAutoImageIndex();
 
-            return DoOnAfterAction(Args);
+            return bInternal ? true : DoOnAfterAction(Args);
         }
 
-
-        private bool DoOnAfterAction(TVNMA_ActionsArgs Args)
+        private bool DoOnAfterAction(TVNMA_ActionArgs Args)
         {
             return OnAfterAction == null ? true : OnAfterAction(Args);
         }
 
-        private bool DoOnBeforeAction(TVNMA_ActionsArgs Args)
+        private bool DoOnBeforeAction(TVNMA_ActionArgs Args)
         {
             return OnBeforeAction == null ? true : OnBeforeAction(Args);
         }

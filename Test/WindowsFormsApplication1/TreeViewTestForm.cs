@@ -36,12 +36,72 @@ namespace WindowsFormsApplication1
                     TVNMA_ActionOptions.MoveAbove,
                     TVNMA_ActionOptions.MoveBelow,
                     TVNMA_ActionOptions.AddAbove,
-                    TVNMA_ActionOptions.AddBelow
-                }
+                    TVNMA_ActionOptions.AddBelow,
+                    TVNMA_ActionOptions.Rename,
+                    TVNMA_ActionOptions.Delete,
+                },
+                OnBeforeAction = BeforeTVNMA,
+                OnAfterAction = AfterTVNMA
             };
             tvExt.Attach();
 
             PopulateTree(treeView1);
+        }
+
+        private bool AfterTVNMA(TVNMA_ActionArgs Args)
+        {
+            Text = ArgsToText(Args, false);
+            return true;
+        }
+
+        private bool BeforeTVNMA(TVNMA_ActionArgs Args)
+        {
+            switch (Args.Action)
+            {
+                case TVNMA_Actions.Add_Above:
+                    Args.TextNew = "New node above - " + Args.TextOld;
+                    break;
+
+                case TVNMA_Actions.Add_Below:
+                    Args.TextNew = "New node below - " + Args.TextOld;
+                    break;
+                case TVNMA_Actions.Rename:
+                    Args.TextNew = Args.TextOld + "*";
+                    break;
+            }
+
+            Text = ArgsToText(Args, true);
+            Args.Tag = Args.SrcNode.FullPath;
+            return true;
+        }
+
+        private string ArgsToText(
+            TVNMA_ActionArgs Args, 
+            bool bBefore)
+        {
+            // Deleted node?
+            if (!bBefore && Args.Action == TVNMA_Actions.Delete)
+            {
+                if (Args.DestNode != null)
+                {
+                    return string.Format("Action={0}, OldPath=[{1}] CurSelPath=[{2}]",
+                        Args.Action.ToString(),
+                        Args.Tag as string,
+                        Args.DestNode.FullPath);
+                }
+                else
+                {
+                    return "Empty!";
+                }
+            }
+            else
+            {
+                return string.Format("@{0},Action={1},OldPath=[{2}] NewPath[{3}]",
+                    Args.SrcNode.Index,
+                    Args.Action.ToString(),
+                    Args.Tag as string,
+                    Args.SrcNode.FullPath);
+            }
         }
 
         private void PopulateTree(TreeView tv1)
