@@ -492,7 +492,7 @@ namespace lallouslab.FluentLib.WinForms.PresentationControls
         /// <summary>
         /// Paints the size grip.
         /// </summary>
-        /// <param name="e">The <see cref="System.Windows.Forms.PaintEventArgs" /> instance containing the event data.</param>
+        /// <param name="e">The <see cref="Sys.Windows.Forms.PaintEventArgs" /> instance containing the event data.</param>
         public void PaintSizeGrip(PaintEventArgs e)
         {
             if (e == null || e.Graphics == null || !resizable)

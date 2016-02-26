@@ -7,7 +7,7 @@
     <ProjectGuid>{17DC84BA-22D7-4DD3-81DA-6B04CB902311}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>lallouslab.FluentLib.System</RootNamespace>
+    <RootNamespace>lallouslab.FluentLib.Sys</RootNamespace>
     <AssemblyName>FluentLib.System</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>

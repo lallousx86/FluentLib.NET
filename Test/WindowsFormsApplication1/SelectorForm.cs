@@ -47,5 +47,29 @@ namespace WindowsFormsApplication1
             
             f.ShowDialog();
         }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            object[] items = (new List<string>
+            {
+                "hello",
+                "world"
+            }).ToArray();
+
+            var f = new lallouslab.FluentLib.WinForms.Dialogs.StaticItemsPicker(
+                Items: items,
+                bMultiSelect: false
+                );
+            f.ShowDialog();
+        }
+
+        private void SelectorForm_Load(object sender, EventArgs e)
+        {
+            this.BeginInvoke(new MethodInvoker(() =>
+            {
+                button2_Click(button2, e);
+                Close();
+            }));
+        }
     }
 }

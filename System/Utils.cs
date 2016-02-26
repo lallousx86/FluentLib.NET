@@ -27,7 +27,7 @@
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 
-namespace lallouslab.FluentLib.System
+namespace lallouslab.FluentLib.Sys
 {
     public class BoxedType<T>
     {

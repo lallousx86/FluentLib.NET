@@ -27,7 +27,7 @@
 using System;
 using System.Linq;
 
-namespace lallouslab.FluentLib.System.Extensions
+namespace lallouslab.FluentLib.Sys.Extensions
 {
     public static class Extensions
     {

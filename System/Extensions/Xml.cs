@@ -30,7 +30,7 @@ using System.IO;
 using System.Xml;
 using System.Xml.Serialization;
 
-namespace lallouslab.FluentLib.System.Extensions
+namespace lallouslab.FluentLib.Sys.Extensions
 {
     public static class XmlExtensions
     {

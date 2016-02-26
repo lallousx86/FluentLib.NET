@@ -27,7 +27,7 @@
 using System;
 using System.IO;
 
-namespace lallouslab.FluentLib.System
+namespace lallouslab.FluentLib.Sys
 {
     public static class IO
     {

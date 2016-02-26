@@ -31,7 +31,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace lallouslab.FluentLib.System.Extensions
+namespace lallouslab.FluentLib.Sys.Extensions
 {
     public static class StringExtensions
     {

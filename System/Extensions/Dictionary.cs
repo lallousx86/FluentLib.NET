@@ -26,7 +26,7 @@
 */
 using System.Collections.Generic;
 
-namespace lallouslab.FluentLib.System.Extensions
+namespace lallouslab.FluentLib.Sys.Extensions
 {
     public static class DictionaryExtension
     {
