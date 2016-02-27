@@ -42,14 +42,15 @@ namespace lallouslab.FluentLib.WinForms.Dialogs
         [Flags]
         public enum MatchingFlags: int
         {
-            Contains   = 0x01,
-            Matches    = 0x02,
-            StartsWith = 0x04,
-            EndsWith   = 0x08,
-            RegEx    = 0x10,
-            Fuzzy      = 0x20,
+            Contains     = 0x01,
+            Exact        = 0x02,
+            StartsWith   = 0x04,
+            EndsWith     = 0x08,
+            RegEx        = 0x10,
+            Fuzzy        = 0x20,
 
-            Basic      = Contains | Matches,
+            Basic        = Contains | Exact,
+            Intermediate = Basic | StartsWith | EndsWith
         }
 
         /// <summary>
@@ -62,14 +63,17 @@ namespace lallouslab.FluentLib.WinForms.Dialogs
             public Regex re;
 
             public string[] ItemsStringCache;
+            public bool[] ItemsSelCache;
         }
 
         FilterOptions m_Filter = new FilterOptions();
+        private bool m_bInstantFilter;
 
         public StaticItemsPicker(
             object [] Items,
             bool bMultiSelect = false,
             string Title = null,
+            bool InstantFilter = true,
             MatchingFlags MatchFlags = MatchingFlags.Basic,
             MatchingFlags DefaultMatchFlag = 0)
         {
@@ -80,6 +84,7 @@ namespace lallouslab.FluentLib.WinForms.Dialogs
             lvItems.CheckBoxes = bMultiSelect;
 
             m_Items = Items;
+            m_bInstantFilter = InstantFilter;
 
             // Override the title if given
             if (!string.IsNullOrEmpty(Title))
@@ -99,12 +104,13 @@ namespace lallouslab.FluentLib.WinForms.Dialogs
                 foreach (ListViewItem lvi in lvItems.Items)
                 {
                     if (lvi.Checked)
-                        L.Add(lvi.Tag);
+                        L.Add(m_Items[(int)lvi.Tag]);
                 }
             }
             else
             {
-                L.Add(lvItems.SelectedItems.Count == 0 ? null : lvItems.SelectedItems[0].Tag);
+                L.Add(lvItems.SelectedItems.Count == 0 
+                        ? null : m_Items[(int) lvItems.SelectedItems[0].Tag] );
             }
             return L.ToArray();
         }
@@ -149,6 +155,7 @@ namespace lallouslab.FluentLib.WinForms.Dialogs
             // to the text match type.
             bool bFound = false;
 
+            //;!TODO: decouple RegEx setting.
             for (int iRetry = 0; iRetry < 2; iRetry++)
             {
                 // Uncheck all other items but the current one.
@@ -217,6 +224,15 @@ namespace lallouslab.FluentLib.WinForms.Dialogs
             EventArgs e)
         {
             m_Filter.Text = txtFilter.Text;
+
+            if (m_bInstantFilter)
+            {
+                BeginInvoke(new MethodInvoker(
+                    delegate 
+                    {
+                        PopulateItems();
+                    }));
+            }
         }
 
         private void btnTextFilterOption_Click(object sender, EventArgs e)
@@ -246,8 +262,12 @@ namespace lallouslab.FluentLib.WinForms.Dialogs
             if (m_Filter.ItemsStringCache == null)
             {
                 m_Filter.ItemsStringCache = new string[count];
+                m_Filter.ItemsSelCache = new bool[count];
                 for (int i = 0; i < count; i++)
+                {
                     m_Filter.ItemsStringCache[i] = m_Items[i].ToString();
+                    m_Filter.ItemsSelCache[i] = false;
+                }
             }
 
             //
@@ -257,7 +277,7 @@ namespace lallouslab.FluentLib.WinForms.Dialogs
             lvItems.BeginUpdate();
 
             var FilterText = m_Filter.Text;
-            for (int i=0; i<count; i++)
+            for (int i = 0; i < count; i++)
             {
                 var str = m_Filter.ItemsStringCache[i];
                 if (!string.IsNullOrEmpty(FilterText))
@@ -265,7 +285,7 @@ namespace lallouslab.FluentLib.WinForms.Dialogs
                     bool bIncl = true;
                     switch (m_Filter.type)
                     {
-                        case MatchingFlags.Matches:
+                        case MatchingFlags.Exact:
                             bIncl = FilterText.Equals(str, StringComparison.OrdinalIgnoreCase);
                             break;
                         case MatchingFlags.Contains:
@@ -287,15 +307,21 @@ namespace lallouslab.FluentLib.WinForms.Dialogs
                 }
 
                 // Add item
-                lvItems.Items.Add(
-                    new ListViewItem(str)
-                    {
-                        Tag = m_Items[i]
-                    }
-                );
+                lvItems.Items.Add(new ListViewItem(str)
+                {
+                    Tag = i,
+                    Checked = m_Filter.ItemsSelCache[i]
+                });
             }
 
             lvItems.EndUpdate();
+        }
+
+        private void lvItems_ItemChecked(
+            object sender, 
+            ItemCheckedEventArgs e)
+        {
+            m_Filter.ItemsSelCache[(int)e.Item.Tag] = e.Item.Checked;
         }
     }
 }

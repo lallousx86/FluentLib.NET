@@ -81,6 +81,7 @@
             this.lvItems.TabIndex = 4;
             this.lvItems.UseCompatibleStateImageBehavior = false;
             this.lvItems.View = System.Windows.Forms.View.List;
+            this.lvItems.ItemChecked += new System.Windows.Forms.ItemCheckedEventHandler(this.lvItems_ItemChecked);
             // 
             // btnOk
             // 

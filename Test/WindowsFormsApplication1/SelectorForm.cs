@@ -67,7 +67,8 @@ namespace WindowsFormsApplication1
             var f = new StaticItemsPicker(
                 Items: items,
                 Title: "Asdf",
-                bMultiSelect: false,
+                bMultiSelect: true,
+                InstantFilter: true,
                 MatchFlags: StaticItemsPicker.MatchingFlags.Basic | StaticItemsPicker.MatchingFlags.StartsWith | StaticItemsPicker.MatchingFlags.RegEx,
                 DefaultMatchFlag: StaticItemsPicker.MatchingFlags.StartsWith);
 
