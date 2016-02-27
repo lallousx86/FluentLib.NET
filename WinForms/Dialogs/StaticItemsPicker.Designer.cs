@@ -36,13 +36,7 @@
             this.btnOk = new System.Windows.Forms.Button();
             this.btnCancel = new System.Windows.Forms.Button();
             this.btnTextFilterOption = new System.Windows.Forms.Button();
-            this.ctxmenuFilterOptions = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.ctxmiContains = new System.Windows.Forms.ToolStripMenuItem();
-            this.ctxmiStartsWith = new System.Windows.Forms.ToolStripMenuItem();
-            this.ctxmiEndsWith = new System.Windows.Forms.ToolStripMenuItem();
-            this.ctxmiMatches = new System.Windows.Forms.ToolStripMenuItem();
-            this.ctxmiREMatch = new System.Windows.Forms.ToolStripMenuItem();
-            this.ctxmenuFilterOptions.SuspendLayout();
+            this.ctxmenuMatchOptions = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.SuspendLayout();
             // 
             // label1
@@ -62,7 +56,8 @@
             this.txtFilter.Name = "txtFilter";
             this.txtFilter.Size = new System.Drawing.Size(219, 20);
             this.txtFilter.TabIndex = 1;
-            this.txtFilter.TextChanged += new System.EventHandler(this.textBox1_TextChanged);
+            this.txtFilter.TextChanged += new System.EventHandler(this.txtFilter_TextChanged);
+            this.txtFilter.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.txtFilter_KeyPress);
             // 
             // label2
             // 
@@ -121,46 +116,10 @@
             this.btnTextFilterOption.UseVisualStyleBackColor = true;
             this.btnTextFilterOption.Click += new System.EventHandler(this.btnTextFilterOption_Click);
             // 
-            // ctxmenuFilterOptions
+            // ctxmenuMatchOptions
             // 
-            this.ctxmenuFilterOptions.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.ctxmiContains,
-            this.ctxmiMatches,
-            this.ctxmiStartsWith,
-            this.ctxmiEndsWith,
-            this.ctxmiREMatch});
-            this.ctxmenuFilterOptions.Name = "ctxmenuFilterOptions";
-            this.ctxmenuFilterOptions.Size = new System.Drawing.Size(130, 114);
-            // 
-            // ctxmiContains
-            // 
-            this.ctxmiContains.Name = "ctxmiContains";
-            this.ctxmiContains.Size = new System.Drawing.Size(129, 22);
-            this.ctxmiContains.Text = "Contains";
-            // 
-            // ctxmiStartsWith
-            // 
-            this.ctxmiStartsWith.Name = "ctxmiStartsWith";
-            this.ctxmiStartsWith.Size = new System.Drawing.Size(129, 22);
-            this.ctxmiStartsWith.Text = "Starts with";
-            // 
-            // ctxmiEndsWith
-            // 
-            this.ctxmiEndsWith.Name = "ctxmiEndsWith";
-            this.ctxmiEndsWith.Size = new System.Drawing.Size(129, 22);
-            this.ctxmiEndsWith.Text = "Ends with";
-            // 
-            // ctxmiMatches
-            // 
-            this.ctxmiMatches.Name = "ctxmiMatches";
-            this.ctxmiMatches.Size = new System.Drawing.Size(129, 22);
-            this.ctxmiMatches.Text = "Matches";
-            // 
-            // ctxmiREMatch
-            // 
-            this.ctxmiREMatch.Name = "ctxmiREMatch";
-            this.ctxmiREMatch.Size = new System.Drawing.Size(129, 22);
-            this.ctxmiREMatch.Text = "RE Match";
+            this.ctxmenuMatchOptions.Name = "ctxmenuMatchOptions";
+            this.ctxmenuMatchOptions.Size = new System.Drawing.Size(61, 4);
             // 
             // StaticItemsPicker
             // 
@@ -178,7 +137,6 @@
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "StaticItemsPicker";
             this.Load += new System.EventHandler(this.StaticItemsPicker_Load);
-            this.ctxmenuFilterOptions.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -193,11 +151,6 @@
         private System.Windows.Forms.Button btnOk;
         private System.Windows.Forms.Button btnCancel;
         private System.Windows.Forms.Button btnTextFilterOption;
-        private System.Windows.Forms.ContextMenuStrip ctxmenuFilterOptions;
-        private System.Windows.Forms.ToolStripMenuItem ctxmiContains;
-        private System.Windows.Forms.ToolStripMenuItem ctxmiMatches;
-        private System.Windows.Forms.ToolStripMenuItem ctxmiStartsWith;
-        private System.Windows.Forms.ToolStripMenuItem ctxmiEndsWith;
-        private System.Windows.Forms.ToolStripMenuItem ctxmiREMatch;
+        private System.Windows.Forms.ContextMenuStrip ctxmenuMatchOptions;
     }
 }
