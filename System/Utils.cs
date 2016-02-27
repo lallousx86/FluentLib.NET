@@ -38,6 +38,19 @@ namespace lallouslab.FluentLib.Sys
 
     public static class Utils
     {
+        /// <summary>
+        /// From: http://stackoverflow.com/a/2709523
+        /// http://en.wikipedia.org/wiki/Hamming_weight
+        /// </summary>
+        /// <param name="i"></param>
+        /// <returns></returns>
+        public static long CountSetBits(long i)
+        {
+            i = i - ((i >> 1) & 0x5555555555555555);
+            i = (i & 0x3333333333333333) + ((i >> 2) & 0x3333333333333333);
+            return (((i + (i >> 4)) & 0xF0F0F0F0F0F0F0F) * 0x101010101010101) >> 56;
+        }
+
         public static string GetCurrentAsmDirectory()
         {
             return Path.GetDirectoryName((new FileInfo(global::System.Reflection.Assembly.GetExecutingAssembly().Location)).FullName);
