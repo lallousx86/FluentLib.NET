@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using System.Text;
@@ -39,7 +40,7 @@ namespace WindowsFormsApplication1
             StartColors[1] = Color.Gray;
             StartColors[2] = Color.Orange;
 
-            var f = new lallouslab.FluentLib.WinForms.Dialogs.NamedItemsColorChooser(
+            var f = new NamedItemsColorChooser(
                 Names,
                 StartColors)
             {
@@ -49,7 +50,9 @@ namespace WindowsFormsApplication1
             f.ShowDialog();
         }
 
-        private void button2_Click(object sender, EventArgs e)
+        private void button2_Click(
+            object sender,
+            EventArgs e)
         {
             object[] items = (new List<string>
             {
@@ -68,7 +71,12 @@ namespace WindowsFormsApplication1
                 MatchFlags: StaticItemsPicker.MatchingFlags.Basic | StaticItemsPicker.MatchingFlags.StartsWith | StaticItemsPicker.MatchingFlags.RegEx,
                 DefaultMatchFlag: StaticItemsPicker.MatchingFlags.StartsWith);
 
-            f.ShowDialog();
+            if (f.ShowDialog() == DialogResult.OK)
+            {
+                object[] res = f.GetSelection();
+                foreach (string s in res)
+                    Debug.WriteLine(s);
+            }
         }
 
         private void SelectorForm_Load(

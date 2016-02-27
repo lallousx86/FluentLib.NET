@@ -25,6 +25,7 @@
 * ----------------------------------------------------------------------------- 
 */
 using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
@@ -75,7 +76,9 @@ namespace lallouslab.FluentLib.WinForms.Dialogs
             InitializeComponent();
 
             // Copy the arguments
-            lvItems.MultiSelect = bMultiSelect;
+            lvItems.MultiSelect = false;
+            lvItems.CheckBoxes = bMultiSelect;
+
             m_Items = Items;
 
             // Override the title if given
@@ -86,6 +89,24 @@ namespace lallouslab.FluentLib.WinForms.Dialogs
             var FirstFlag = CreateMatchTypeMenu(MatchFlags);
             if (!SetMatchMenu(DefaultMatchFlag))
                 SetMatchMenu(FirstFlag);
+        }
+
+        public object [] GetSelection()
+        {
+            var L = new List<object>();
+            if (lvItems.CheckBoxes)
+            {
+                foreach (ListViewItem lvi in lvItems.Items)
+                {
+                    if (lvi.Checked)
+                        L.Add(lvi.Tag);
+                }
+            }
+            else
+            {
+                L.Add(lvItems.SelectedItems.Count == 0 ? null : lvItems.SelectedItems[0].Tag);
+            }
+            return L.ToArray();
         }
 
         private MatchingFlags CreateMatchTypeMenu(
