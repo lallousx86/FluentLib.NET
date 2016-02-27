@@ -74,19 +74,31 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ListView\SimpleListViewItemComparer.cs" />
     <Compile Include="Dialogs\StdDialogs.cs" />
+    <Compile Include="TreeView\TreeNodeExtensions.cs" />
+    <Compile Include="TreeView\TreeView.cs" />
+    <Compile Include="TreeView\TreeViewVaultNodes.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>TreeViewVaultNodes.resx</DependentUpon>
+    </Compile>
     <Compile Include="UIUtils.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Controls\CheckboxComboBox\PopupComboBox.resx" />
-    <EmbeddedResource Include="Dialogs\NamedItemsColorPicker.resx">
-      <DependentUpon>NamedItemsColorPicker.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="Dialogs\StaticItemsPicker.resx">
       <DependentUpon>StaticItemsPicker.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="TreeView\TreeViewVaultNodes.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>TreeViewVaultNodes.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <Content Include="Controls\CheckboxComboBox\readme.txt" />
+    <None Include="TreeView\node.bmp" />
+    <None Include="TreeView\node-opened.bmp" />
+    <None Include="TreeView\node-closed.bmp" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

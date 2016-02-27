@@ -16,16 +16,17 @@ namespace WindowsFormsApplication1
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Form f = null;
-            if (args.Length > 0)
+
+            Dictionary<string, Type> TestForms = new Dictionary<string, Type>(StringComparer.OrdinalIgnoreCase)
             {
-                string formName = args[0];
-                if (formName.Equals("listviewtest", StringComparison.OrdinalIgnoreCase))
-                    f = new ListViewTestForm();
-            }
-            if (f == null)
-                f = new SelectorForm();
-            Application.Run(f);
+                { "listviewtest", typeof(ListViewTestForm) },
+                { "treeviewtest", typeof(TreeViewTestForm) }
+            };
+            Type formType = null;
+            if (args.Length <= 0 || !TestForms.TryGetValue(args[0], out formType))
+                formType = typeof(SelectorForm);
+
+            Application.Run((Form)Activator.CreateInstance(formType));
         }
     }
 }

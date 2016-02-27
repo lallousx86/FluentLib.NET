@@ -57,6 +57,7 @@ namespace lallouslab.FluentLib.WinForms
                 MessageBoxButtons.OK,
                 MessageBoxIcon.Error);
         }
+
         public static void MsgBoxInfo(
             string Message, 
             params string[] args)

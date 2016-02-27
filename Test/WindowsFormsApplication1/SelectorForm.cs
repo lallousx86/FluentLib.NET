@@ -1,4 +1,5 @@
-﻿using System;
+﻿using lallouslab.FluentLib.WinForms.Dialogs;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -53,17 +54,26 @@ namespace WindowsFormsApplication1
             object[] items = (new List<string>
             {
                 "hello",
-                "world"
+                "world",
+                "tree hugging",
+                "human hugging",
+                "piece",
+                "peice",
             }).ToArray();
 
-            var f = new lallouslab.FluentLib.WinForms.Dialogs.StaticItemsPicker(
+            var f = new StaticItemsPicker(
                 Items: items,
-                bMultiSelect: false
-                );
+                Title: "Asdf",
+                bMultiSelect: false,
+                MatchFlags: StaticItemsPicker.MatchingFlags.Basic | StaticItemsPicker.MatchingFlags.StartsWith | StaticItemsPicker.MatchingFlags.RegEx,
+                DefaultMatchFlag: StaticItemsPicker.MatchingFlags.StartsWith);
+
             f.ShowDialog();
         }
 
-        private void SelectorForm_Load(object sender, EventArgs e)
+        private void SelectorForm_Load(
+            object sender,
+            EventArgs e)
         {
             this.BeginInvoke(new MethodInvoker(() =>
             {
