@@ -76,7 +76,7 @@ namespace lallouslab.FluentLib.WinForms.Dialogs
 
         public StaticItemsPicker(
             object [] Items,
-            bool bMultiSelect = false,
+            bool MultiSelect = false,
             string Title = null,
             bool InstantFilter = true,
             MatchingFlags MatchFlags = MatchingFlags.Basic,
@@ -86,7 +86,7 @@ namespace lallouslab.FluentLib.WinForms.Dialogs
 
             // Multiselect option means: enable checkboxes
             lvItems.MultiSelect = false;
-            lvItems.CheckBoxes = bMultiSelect;
+            lvItems.CheckBoxes = MultiSelect;
 
             // Take items reference
             m_Items = Items;
@@ -122,10 +122,9 @@ namespace lallouslab.FluentLib.WinForms.Dialogs
                         L.Add(m_Items[(int)lvi.Tag]);
                 }
             }
-            else
+            else if (lvItems.SelectedItems.Count > 0)
             {
-                L.Add(lvItems.SelectedItems.Count == 0 
-                        ? null : m_Items[(int) lvItems.SelectedItems[0].Tag] );
+                L.Add(m_Items[(int) lvItems.SelectedItems[0].Tag]);
             }
             return L.ToArray();
         }
