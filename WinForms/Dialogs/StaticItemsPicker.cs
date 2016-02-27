@@ -34,8 +34,6 @@ namespace lallouslab.FluentLib.WinForms.Dialogs
 {
     public partial class StaticItemsPicker : Form
     {
-        private object[] m_Items;
-
         /// <summary>
         /// Match types
         /// </summary>
@@ -59,15 +57,22 @@ namespace lallouslab.FluentLib.WinForms.Dialogs
         class FilterOptions
         {
             public string Text;
-            public MatchingFlags type = MatchingFlags.Contains;
+            public MatchingFlags MatchType = MatchingFlags.Contains;
             public Regex re;
 
             public string[] ItemsStringCache;
             public bool[] ItemsSelCache;
         }
 
-        FilterOptions m_Filter = new FilterOptions();
-        private bool m_bInstantFilter;
+        private FilterOptions m_Filter = new FilterOptions();
+
+        private object[] m_Items;
+
+        /// <summary>
+        /// Instantly apply the typed text filter.
+        /// This option can be updated on runtime.
+        /// </summary>
+        public bool InstantFilter;
 
         public StaticItemsPicker(
             object [] Items,
@@ -79,12 +84,15 @@ namespace lallouslab.FluentLib.WinForms.Dialogs
         {
             InitializeComponent();
 
-            // Copy the arguments
+            // Multiselect option means: enable checkboxes
             lvItems.MultiSelect = false;
             lvItems.CheckBoxes = bMultiSelect;
 
+            // Take items reference
             m_Items = Items;
-            m_bInstantFilter = InstantFilter;
+
+            // Set instant filter
+            this.InstantFilter = InstantFilter;
 
             // Override the title if given
             if (!string.IsNullOrEmpty(Title))
@@ -94,6 +102,13 @@ namespace lallouslab.FluentLib.WinForms.Dialogs
             var FirstFlag = CreateMatchTypeMenu(MatchFlags);
             if (!SetMatchMenu(DefaultMatchFlag))
                 SetMatchMenu(FirstFlag);
+        }
+
+        private void StaticItemsPicker_Load(
+            object sender, 
+            EventArgs e)
+        {
+            PopulateItems();
         }
 
         public object [] GetSelection()
@@ -126,7 +141,7 @@ namespace lallouslab.FluentLib.WinForms.Dialogs
                 if (!MatchFlags.HasFlag(fl))
                     continue;
 
-                // Skip multi-flag options
+                // Skip multiflag options
                 if (Sys.Utils.CountSetBits((long)fl) > 1)
                     continue;
 
@@ -150,106 +165,49 @@ namespace lallouslab.FluentLib.WinForms.Dialogs
 
         private bool SetMatchMenu(MatchingFlags CurMatch)
         {
-            // We want to try two times at most. This is because
-            // if we failed to set the regular expression type then we will revert
-            // to the text match type.
             bool bFound = false;
 
-            //;!TODO: decouple RegEx setting.
-            for (int iRetry = 0; iRetry < 2; iRetry++)
+            // Uncheck all other items but the current one.
+            foreach (ToolStripMenuItem mi in ctxmenuMatchOptions.Items)
             {
-                // Uncheck all other items but the current one.
-                foreach (ToolStripMenuItem mi in ctxmenuMatchOptions.Items)
+                if ((MatchingFlags)mi.Tag == CurMatch)
                 {
-                    if ((MatchingFlags)mi.Tag == CurMatch)
-                    {
-                        mi.Checked = true;
-                        bFound = true;
-                    }
-                    else
-                    {
-                        mi.Checked = false;
-                    }
+                    mi.Checked = true;
+                    bFound = true;
                 }
-
-                if (bFound && CurMatch == MatchingFlags.RegEx)
+                else
                 {
-                    try
-                    {
-                        // Build the regex
-                        m_Filter.re = new Regex(m_Filter.Text, RegexOptions.IgnoreCase);
-                    }
-                    catch
-                    {
-                        // Change to basic match
-                        CurMatch = MatchingFlags.Contains;
-
-                        // Clear the previous expression
-                        m_Filter.re = null;
-
-                        // loop again. so we get the menus checked/unchecked properly.
-                        continue; 
-                    }
+                    mi.Checked = false;
                 }
-                // No need to retry.
-                break;
             }
 
-            m_Filter.type = CurMatch;
-
+            m_Filter.MatchType = CurMatch;
             return bFound;
         }
 
-        private void ctxmenuMatchTypeClick(
-            object sender, 
-            EventArgs e)
+        private bool UpdateFilterRegEx()
         {
-            var m = (sender as ToolStripMenuItem);
-            var CurMatch = (MatchingFlags)m.Tag;
-
-            SetMatchMenu(CurMatch);
-
-            PopulateItems();
-        }
-
-        private void StaticItemsPicker_Load(
-            object sender, 
-            EventArgs e)
-        {
-            PopulateItems();
-        }
-
-        private void txtFilter_TextChanged(
-            object sender, 
-            EventArgs e)
-        {
-            m_Filter.Text = txtFilter.Text;
-
-            if (m_bInstantFilter)
+            try
             {
-                BeginInvoke(new MethodInvoker(
-                    delegate 
-                    {
-                        PopulateItems();
-                    }));
+                // Build the regex
+                m_Filter.re = new Regex(m_Filter.Text, RegexOptions.IgnoreCase);
+
+                SetFilterTextError(false);
+                return true;
+            }
+            catch
+            {
+                SetFilterTextError(true);
+
+                // Clear the previous expression
+                m_Filter.re = null;
+                return false;
             }
         }
 
-        private void btnTextFilterOption_Click(object sender, EventArgs e)
+        private void SetFilterTextError(bool bError)
         {
-            var btn = sender as Button;
-            ctxmenuMatchOptions.Show(btn, new Point(0, btn.Height));
-        }
-
-        private void txtFilter_KeyPress(
-            object sender, 
-            KeyPressEventArgs e)
-        {
-            if (e.KeyChar == '\t' || e.KeyChar == '\r')
-            {
-                e.Handled = true;
-                PopulateItems();
-            }
+            txtFilter.ForeColor = bError ? Color.Red : Color.Empty;
         }
 
         private void PopulateItems()
@@ -270,6 +228,10 @@ namespace lallouslab.FluentLib.WinForms.Dialogs
                 }
             }
 
+            // Do not repopulate if RegEx could not be set
+            if (m_Filter.MatchType == MatchingFlags.RegEx && !UpdateFilterRegEx())
+                return;
+
             //
             // Start populating
             //
@@ -283,7 +245,7 @@ namespace lallouslab.FluentLib.WinForms.Dialogs
                 if (!string.IsNullOrEmpty(FilterText))
                 {
                     bool bIncl = true;
-                    switch (m_Filter.type)
+                    switch (m_Filter.MatchType)
                     {
                         case MatchingFlags.Exact:
                             bIncl = FilterText.Equals(str, StringComparison.OrdinalIgnoreCase);
@@ -317,11 +279,64 @@ namespace lallouslab.FluentLib.WinForms.Dialogs
             lvItems.EndUpdate();
         }
 
+        #region Event handlers
+        private void ctxmenuMatchTypeClick(
+            object sender, 
+            EventArgs e)
+        {
+            var CurMatch = (MatchingFlags)(sender as ToolStripMenuItem).Tag;
+
+            SetMatchMenu(CurMatch);
+
+            SetFilterTextError(CurMatch == MatchingFlags.RegEx ? !UpdateFilterRegEx() : false);
+
+            PopulateItems();
+        }
+
+        private void txtFilter_TextChanged(
+            object sender, 
+            EventArgs e)
+        {
+            m_Filter.Text = txtFilter.Text;
+
+            if (InstantFilter)
+            {
+                BeginInvoke(new MethodInvoker(
+                    delegate 
+                    {
+                        PopulateItems();
+                    }));
+            }
+        }
+
+        private void btnTextFilterOption_Click(object sender, EventArgs e)
+        {
+            var btn = sender as Button;
+            ctxmenuMatchOptions.Show(btn, new Point(0, btn.Height));
+        }
+        /// <summary>
+        /// Handle key presses. ENTER to apply filter.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void txtFilter_KeyPress(
+            object sender, 
+            KeyPressEventArgs e)
+        {
+            if (e.KeyChar == '\t' || e.KeyChar == '\r')
+            {
+                e.Handled = true;
+                PopulateItems();
+            }
+        }
+
         private void lvItems_ItemChecked(
             object sender, 
             ItemCheckedEventArgs e)
         {
             m_Filter.ItemsSelCache[(int)e.Item.Tag] = e.Item.Checked;
         }
+        #endregion
+
     }
 }
