@@ -65,6 +65,7 @@ namespace lallouslab.FluentLib.WinForms
             public MSWinForms.ToolStripMenuItem FindNextMenu;
             public MSWinForms.ToolStripMenuItem CopyItemMenu;
             public MSWinForms.ToolStripMenuItem SelectAllMenu;
+            public MSWinForms.ToolStripMenuItem DeSelectAllMenu;
             public MSWinForms.ToolStripMenuItem DeleteMenu;
         }
 
@@ -110,12 +111,22 @@ namespace lallouslab.FluentLib.WinForms
 
             return string.Join(Join, s);
         }
-        public static void SelectAll(
-            this MSWinForms.ListView lv)
+
+        public static void SelectDeselectAll(
+            this MSWinForms.ListView lv,
+            bool bSelected = true)
         {
             lv.BeginUpdate();
+
+            bool bChk = lv.CheckBoxes;
             foreach (MSWinForms.ListViewItem lvi in lv.Items)
-                lvi.Selected = true;
+            {
+                if (bChk)
+                    lvi.Checked = bSelected;
+                else
+                    lvi.Selected = bSelected;
+            }
+
             lv.EndUpdate();
         }
 
@@ -196,7 +207,16 @@ namespace lallouslab.FluentLib.WinForms
         {
             var lvCtx = GetCommonLVContext(sender);
             if (lvCtx != null)
-                lvCtx.lv.SelectAll();
+                lvCtx.lv.SelectDeselectAll();
+        }
+
+        private static void menuCommonLVDeSelectAll_Click(
+            object sender,
+            EventArgs e)
+        {
+            var lvCtx = GetCommonLVContext(sender);
+            if (lvCtx != null)
+                lvCtx.lv.SelectDeselectAll(false);
         }
 
         private static void menuCommonLVExportToTextFile_Click(
@@ -418,6 +438,10 @@ namespace lallouslab.FluentLib.WinForms
             if (options == null)
                 options = new Options();
 
+            // If no menu passed, use the menu associated with the LV
+            if (Menu == null)
+                Menu = LV.ContextMenuStrip;
+
             //
             // Create the context
             var Context = new ContextMenuTag()
@@ -449,10 +473,19 @@ namespace lallouslab.FluentLib.WinForms
                 };
                 Context.SelectAllMenu.Click += new EventHandler(menuCommonLVSelectAll_Click);
 
+                // DeSelect All
+                Context.DeSelectAllMenu = new MSWinForms.ToolStripMenuItem()
+                {
+                    ShortcutKeys = (MSWinForms.Keys.Control | MSWinForms.Keys.D),
+                    Text = "De-Select all"
+                };
+                Context.DeSelectAllMenu.Click += new EventHandler(menuCommonLVDeSelectAll_Click);
+
                 DynMenus.AddRange(new MSWinForms.ToolStripItem[]
                 {
                     Context.CopyItemMenu,
                     Context.SelectAllMenu,
+                    Context.DeSelectAllMenu,
                     new MSWinForms.ToolStripSeparator(),
                 });
             }
