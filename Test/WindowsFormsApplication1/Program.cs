@@ -26,7 +26,23 @@ namespace WindowsFormsApplication1
             if (args.Length <= 0 || !TestForms.TryGetValue(args[0], out formType))
                 formType = typeof(SelectorForm);
 
-            Application.Run((Form)Activator.CreateInstance(formType));
+            // Did we selected a auto-click event from the selector form
+            Form frm;
+            if (formType == typeof(SelectorForm) && args.Length > 0)
+            {
+                var selform = new SelectorForm();
+
+                // Set the auto click name
+                selform.AutoClickButton = args[0];
+                frm = selform;
+            }
+            else
+            {
+                // Select a test form
+                frm = (Form)Activator.CreateInstance(formType);
+            }
+
+            Application.Run(frm);
         }
     }
 }

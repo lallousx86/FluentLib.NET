@@ -43,6 +43,7 @@
             this.btnCancel = new System.Windows.Forms.Button();
             this.pnlLV = new System.Windows.Forms.Panel();
             this.lvItems = new System.Windows.Forms.ListView();
+            this.ctxmenuLV = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.pnlAdd.SuspendLayout();
             this.pnlFilter.SuspendLayout();
             this.pnlOkCancel.SuspendLayout();
@@ -180,6 +181,7 @@
             // 
             // lvItems
             // 
+            this.lvItems.ContextMenuStrip = this.ctxmenuLV;
             this.lvItems.Dock = System.Windows.Forms.DockStyle.Fill;
             this.lvItems.FullRowSelect = true;
             this.lvItems.Location = new System.Drawing.Point(0, 0);
@@ -189,6 +191,11 @@
             this.lvItems.UseCompatibleStateImageBehavior = false;
             this.lvItems.View = System.Windows.Forms.View.List;
             this.lvItems.ItemChecked += new System.Windows.Forms.ItemCheckedEventHandler(this.lvItems_ItemChecked);
+            // 
+            // ctxmenuLV
+            // 
+            this.ctxmenuLV.Name = "contextMenuStrip1";
+            this.ctxmenuLV.Size = new System.Drawing.Size(61, 4);
             // 
             // StringsPicker
             // 
@@ -233,5 +240,6 @@
         private System.Windows.Forms.Button btnOk;
         private System.Windows.Forms.Panel pnlLV;
         private System.Windows.Forms.ListView lvItems;
+        private System.Windows.Forms.ContextMenuStrip ctxmenuLV;
     }
 }

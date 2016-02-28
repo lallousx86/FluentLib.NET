@@ -100,6 +100,11 @@ namespace lallouslab.FluentLib.WinForms.Dialogs
             }
         }
 
+        public ListView GetListView()
+        {
+            return lvItems;
+        }
+
         /// <summary>
         /// Filter options
         /// </summary>
@@ -125,6 +130,7 @@ namespace lallouslab.FluentLib.WinForms.Dialogs
             string Title = null,
             bool AllowAddItems = false,
             bool InstantFilter = true,
+            bool UseBasicLVExtensions = true,
             MatchingFlags MatchFlags = MatchingFlags.Basic,
             MatchingFlags DefaultMatchFlag = 0)
         {
@@ -149,6 +155,18 @@ namespace lallouslab.FluentLib.WinForms.Dialogs
             LayoutControls(AllowAddItems);
 
             m_Filter.Items = new ItemsCache(Items);
+
+            if (UseBasicLVExtensions)
+            {
+                ListViewExtensions.CreateCommonMenuItems(
+                    ctxmenuLV,
+                    lvItems,
+                    new ListViewExtensions.Options()
+                    {
+                        MFlags = ListViewExtensions.MenuFlags.Find | ListViewExtensions.MenuFlags.CopyAndSelect
+                    }
+                );
+            }
         }
 
         private void LayoutControls(bool AllowAddItems)

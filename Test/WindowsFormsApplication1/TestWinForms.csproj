@@ -78,6 +78,9 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <EmbeddedResource Include="SelectorForm.resx">
+      <DependentUpon>SelectorForm.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="TreeViewTestForm.resx">
       <DependentUpon>TreeViewTestForm.cs</DependentUpon>
     </EmbeddedResource>

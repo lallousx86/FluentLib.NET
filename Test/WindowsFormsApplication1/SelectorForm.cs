@@ -1,4 +1,5 @@
-﻿using lallouslab.FluentLib.WinForms.Dialogs;
+﻿using lallouslab.FluentLib.WinForms;
+using lallouslab.FluentLib.WinForms.Dialogs;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -14,6 +15,8 @@ namespace WindowsFormsApplication1
 {
     public partial class SelectorForm : Form
     {
+        public string AutoClickButton;
+
         enum Z
         {
             V1,
@@ -50,7 +53,7 @@ namespace WindowsFormsApplication1
             f.ShowDialog();
         }
 
-        private void button2_Click(
+        private void btnStringsPicker1_Click(
             object sender,
             EventArgs e)
         {
@@ -85,11 +88,58 @@ namespace WindowsFormsApplication1
             object sender,
             EventArgs e)
         {
-            this.BeginInvoke(new MethodInvoker(() =>
+            if (string.IsNullOrEmpty(AutoClickButton))
+                return;
+
+            BeginInvoke(new MethodInvoker(() =>
             {
-                button2_Click(button2, e);
+                switch (AutoClickButton)
+                {
+                    case "click-stringpicker1":
+                        btnStringsPicker1_Click(btnStringsPicker1, e);
+                        break;
+
+                    case "click-stringpicker2":
+                        btnStringsPicker2_Click(btnStringsPicker2, e);
+                        break;
+
+                    default:
+                        return;
+                }
                 Close();
             }));
+        }
+
+        private void btnStringsPicker2_Click(
+            object sender, 
+            EventArgs e)
+        {
+            var items = (new List<string>
+            {
+                "hello",
+                "world",
+                "tree hugging",
+                "human hugging",
+                "piece",
+                "peice",
+            }).ToArray();
+
+            var f = new StringsPicker(
+                Items: items,
+                Title: "Pick an item",
+                MultiSelect: true,
+                InstantFilter: true,
+                AllowAddItems: true,
+                UseBasicLVExtensions: true,
+                MatchFlags: StringsPicker.MatchingFlags.Basic | StringsPicker.MatchingFlags.StartsWith | StringsPicker.MatchingFlags.RegEx,
+                DefaultMatchFlag: StringsPicker.MatchingFlags.StartsWith);
+
+            if (f.ShowDialog() == DialogResult.OK)
+            {
+                object[] res = f.GetSelection();
+                foreach (string s in res)
+                    Debug.WriteLine(s);
+            }
         }
     }
 }
