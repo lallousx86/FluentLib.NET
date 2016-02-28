@@ -30,6 +30,12 @@ using System.Drawing;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
 
+/*
+TODO:
+=====
+Filter context menu => Add case sensitivty checkbox
+Filter.Fuzzy => Implement
+*/
 namespace lallouslab.FluentLib.WinForms.Dialogs
 {
     public partial class StringsPicker : Form
@@ -331,7 +337,7 @@ namespace lallouslab.FluentLib.WinForms.Dialogs
                             bIncl = FilterText.Equals(str, StringComparison.OrdinalIgnoreCase);
                             break;
                         case MatchingFlags.Contains:
-                            bIncl = str.Contains(FilterText);
+                            bIncl = str.IndexOf(FilterText, StringComparison.OrdinalIgnoreCase) != -1;
                             break;
                         case MatchingFlags.EndsWith:
                             bIncl = str.EndsWith(FilterText, StringComparison.OrdinalIgnoreCase);
