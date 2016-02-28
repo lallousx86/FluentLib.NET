@@ -64,11 +64,11 @@
     <Compile Include="Dialogs\NamedItemsColorPicker.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Dialogs\StaticItemsPicker.cs">
+    <Compile Include="Dialogs\StringsPicker.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Dialogs\StaticItemsPicker.Designer.cs">
-      <DependentUpon>StaticItemsPicker.cs</DependentUpon>
+    <Compile Include="Dialogs\StringsPicker.Designer.cs">
+      <DependentUpon>StringsPicker.cs</DependentUpon>
     </Compile>
     <Compile Include="ListView\ListView.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -85,8 +85,8 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Controls\CheckboxComboBox\PopupComboBox.resx" />
-    <EmbeddedResource Include="Dialogs\StaticItemsPicker.resx">
-      <DependentUpon>StaticItemsPicker.cs</DependentUpon>
+    <EmbeddedResource Include="Dialogs\StringsPicker.resx">
+      <DependentUpon>StringsPicker.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="TreeView\TreeViewVaultNodes.resx">
       <Generator>ResXFileCodeGenerator</Generator>

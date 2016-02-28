@@ -32,7 +32,7 @@ using System.Windows.Forms;
 
 namespace lallouslab.FluentLib.WinForms.Dialogs
 {
-    public partial class StaticItemsPicker : Form
+    public partial class StringsPicker : Form
     {
         /// <summary>
         /// Match types
@@ -51,6 +51,55 @@ namespace lallouslab.FluentLib.WinForms.Dialogs
             Intermediate = Basic | StartsWith | EndsWith
         }
 
+        class ItemsCache
+        {
+            public string[] Strs;
+            public bool[] ChkState;
+            public ItemsCache(int size)
+            {
+                Strs = new string[size];
+                ChkState = new bool[size];
+            }
+
+            public ItemsCache(string [] Items): this(Items.Length)
+            {
+                for (int i=0, c = Length; i < c; i++)
+                {
+                    Strs[i] = Items[i];
+                    ChkState[i] = false;
+                }
+            }
+
+            public int Length
+            {
+                get
+                {
+                    return Strs.Length;
+                }
+            }
+
+            internal void CopyFrom(ItemsCache Src)
+            {
+                for (int i=0, c = Src.Length; i < c; i++)
+                {
+                    Strs[i] = Src.Strs[i];
+                    ChkState[i] = Src.ChkState[i];
+                }
+            }
+
+            public void Add(string str)
+            {
+                ItemsCache NewItems = new ItemsCache(Length + 1);
+                NewItems.CopyFrom(this);
+
+                NewItems.Strs[Length] = str;
+                NewItems.ChkState[Length] = true;
+
+                Strs = NewItems.Strs;
+                ChkState = NewItems.ChkState;
+            }
+        }
+
         /// <summary>
         /// Filter options
         /// </summary>
@@ -59,14 +108,10 @@ namespace lallouslab.FluentLib.WinForms.Dialogs
             public string Text;
             public MatchingFlags MatchType = MatchingFlags.Contains;
             public Regex re;
-
-            public string[] ItemsStringCache;
-            public bool[] ItemsSelCache;
+            public ItemsCache Items;
         }
 
         private FilterOptions m_Filter = new FilterOptions();
-
-        private object[] m_Items;
 
         /// <summary>
         /// Instantly apply the typed text filter.
@@ -74,10 +119,11 @@ namespace lallouslab.FluentLib.WinForms.Dialogs
         /// </summary>
         public bool InstantFilter;
 
-        public StaticItemsPicker(
-            object [] Items,
+        public StringsPicker(
+            string [] Items,
             bool MultiSelect = false,
             string Title = null,
+            bool AllowAddItems = false,
             bool InstantFilter = true,
             MatchingFlags MatchFlags = MatchingFlags.Basic,
             MatchingFlags DefaultMatchFlag = 0)
@@ -87,9 +133,6 @@ namespace lallouslab.FluentLib.WinForms.Dialogs
             // Multiselect option means: enable checkboxes
             lvItems.MultiSelect = false;
             lvItems.CheckBoxes = MultiSelect;
-
-            // Take items reference
-            m_Items = Items;
 
             // Set instant filter
             this.InstantFilter = InstantFilter;
@@ -102,29 +145,64 @@ namespace lallouslab.FluentLib.WinForms.Dialogs
             var FirstFlag = CreateMatchTypeMenu(MatchFlags);
             if (!SetMatchMenu(DefaultMatchFlag))
                 SetMatchMenu(FirstFlag);
+
+            LayoutControls(AllowAddItems);
+
+            m_Filter.Items = new ItemsCache(Items);
         }
 
-        private void StaticItemsPicker_Load(
-            object sender, 
-            EventArgs e)
+        private void LayoutControls(bool AllowAddItems)
         {
-            PopulateItems();
+            var flow = new TableLayoutPanel();
+            Panel[] panels = new Panel[]
+            {
+                pnlAdd,
+                pnlFilter,
+                pnlLV,
+                pnlOkCancel
+            };
+            flow.AutoSize = true;
+            flow.AutoSizeMode = AutoSizeMode.GrowOnly;
+            flow.ColumnCount = 1;
+            flow.ColumnStyles.Add(new ColumnStyle()
+            {
+                SizeType = SizeType.Percent,
+                Width = 100
+            });
+
+            int tabidx = 1;
+            foreach (var panel in panels)
+            {
+                Controls.Remove(panel);
+                if (!AllowAddItems && panel == pnlAdd)
+                    continue;
+
+                panel.TabIndex = tabidx++;
+                foreach (Control control in panel.Controls)
+                    control.TabIndex = tabidx++;
+
+                flow.Controls.Add(panel);
+            }
+            Controls.Add(flow);
+
+            AutoSizeMode = AutoSizeMode.GrowAndShrink;
+            AutoSize = true;
         }
 
-        public object [] GetSelection()
+        public string [] GetSelection()
         {
-            var L = new List<object>();
+            var L = new List<string>();
             if (lvItems.CheckBoxes)
             {
                 foreach (ListViewItem lvi in lvItems.Items)
                 {
                     if (lvi.Checked)
-                        L.Add(m_Items[(int)lvi.Tag]);
+                        L.Add(m_Filter.Items.Strs[(int)lvi.Tag]);
                 }
             }
             else if (lvItems.SelectedItems.Count > 0)
             {
-                L.Add(m_Items[(int) lvItems.SelectedItems[0].Tag]);
+                L.Add(m_Filter.Items.Strs[(int)lvItems.SelectedItems[0].Tag]);
             }
             return L.ToArray();
         }
@@ -211,22 +289,6 @@ namespace lallouslab.FluentLib.WinForms.Dialogs
 
         private void PopulateItems()
         {
-            int count = m_Items.Length;
-
-            //
-            // Cache the items once
-            //
-            if (m_Filter.ItemsStringCache == null)
-            {
-                m_Filter.ItemsStringCache = new string[count];
-                m_Filter.ItemsSelCache = new bool[count];
-                for (int i = 0; i < count; i++)
-                {
-                    m_Filter.ItemsStringCache[i] = m_Items[i].ToString();
-                    m_Filter.ItemsSelCache[i] = false;
-                }
-            }
-
             // Do not repopulate if RegEx could not be set
             if (m_Filter.MatchType == MatchingFlags.RegEx && !UpdateFilterRegEx())
                 return;
@@ -238,9 +300,10 @@ namespace lallouslab.FluentLib.WinForms.Dialogs
             lvItems.BeginUpdate();
 
             var FilterText = m_Filter.Text;
-            for (int i = 0; i < count; i++)
+
+            for (int i = 0, count = m_Filter.Items.Length; i < count; i++)
             {
-                var str = m_Filter.ItemsStringCache[i];
+                var str = m_Filter.Items.Strs[i];
                 if (!string.IsNullOrEmpty(FilterText))
                 {
                     bool bIncl = true;
@@ -271,14 +334,27 @@ namespace lallouslab.FluentLib.WinForms.Dialogs
                 lvItems.Items.Add(new ListViewItem(str)
                 {
                     Tag = i,
-                    Checked = m_Filter.ItemsSelCache[i]
+                    Checked = m_Filter.Items.ChkState[i]
                 });
             }
 
             lvItems.EndUpdate();
         }
 
+        private void AddItem(string str)
+        {
+            m_Filter.Items.Add(str);
+            PopulateItems();
+       }
         #region Event handlers
+        private void StaticItemsPicker_Load(
+            object sender, 
+            EventArgs e)
+        {
+            PopulateItems();
+            ActiveControl = txtFilter;
+        }
+
         private void ctxmenuMatchTypeClick(
             object sender, 
             EventArgs e)
@@ -301,7 +377,7 @@ namespace lallouslab.FluentLib.WinForms.Dialogs
             if (InstantFilter)
             {
                 BeginInvoke(new MethodInvoker(
-                    delegate 
+                    delegate
                     {
                         PopulateItems();
                     }));
@@ -333,8 +409,15 @@ namespace lallouslab.FluentLib.WinForms.Dialogs
             object sender, 
             ItemCheckedEventArgs e)
         {
-            m_Filter.ItemsSelCache[(int)e.Item.Tag] = e.Item.Checked;
+            m_Filter.Items.ChkState[(int)e.Item.Tag] = e.Item.Checked;
         }
+        private void btnInsertText_Click(object sender, EventArgs e)
+        {
+            var str = txtInsertText.Text;
+            if (!string.IsNullOrEmpty(str))
+                AddItem(str);
+        }
+
         #endregion
 
     }

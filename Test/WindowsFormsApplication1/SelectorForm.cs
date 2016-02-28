@@ -54,7 +54,7 @@ namespace WindowsFormsApplication1
             object sender,
             EventArgs e)
         {
-            object[] items = (new List<string>
+            var items = (new List<string>
             {
                 "hello",
                 "world",
@@ -64,13 +64,14 @@ namespace WindowsFormsApplication1
                 "peice",
             }).ToArray();
 
-            var f = new StaticItemsPicker(
+            var f = new StringsPicker(
                 Items: items,
-                Title: "Asdf",
+                Title: "Pick an item",
                 MultiSelect: true,
                 InstantFilter: true,
-                MatchFlags: StaticItemsPicker.MatchingFlags.Basic | StaticItemsPicker.MatchingFlags.StartsWith | StaticItemsPicker.MatchingFlags.RegEx,
-                DefaultMatchFlag: StaticItemsPicker.MatchingFlags.StartsWith);
+                AllowAddItems: true,
+                MatchFlags: StringsPicker.MatchingFlags.Basic | StringsPicker.MatchingFlags.StartsWith | StringsPicker.MatchingFlags.RegEx,
+                DefaultMatchFlag: StringsPicker.MatchingFlags.StartsWith);
 
             if (f.ShowDialog() == DialogResult.OK)
             {
