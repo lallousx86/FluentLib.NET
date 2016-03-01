@@ -135,6 +135,7 @@ namespace lallouslab.FluentLib.WinForms.Dialogs
             bool MultiSelect = false,
             string Title = null,
             bool AllowAddItems = false,
+            string FreeStyleValuesCaption = null,
             bool InstantFilter = true,
             bool UseBasicLVExtensions = true,
             MatchingFlags MatchFlags = MatchingFlags.Basic,
@@ -158,7 +159,14 @@ namespace lallouslab.FluentLib.WinForms.Dialogs
             if (!SetMatchMenu(DefaultMatchFlag))
                 SetMatchMenu(FirstFlag);
 
-            LayoutControls(AllowAddItems);
+            bool AllowFreeStyleValues = !string.IsNullOrEmpty(FreeStyleValuesCaption);
+
+            if (AllowFreeStyleValues)
+                lblFreeStyleValues.Text = FreeStyleValuesCaption;
+
+            LayoutControls(
+                AllowAddItems,
+                AllowFreeStyleValues);
 
             m_Filter.Items = new ItemsCache(Items);
 
@@ -175,12 +183,15 @@ namespace lallouslab.FluentLib.WinForms.Dialogs
             }
         }
 
-        private void LayoutControls(bool AllowAddItems)
+        private void LayoutControls(
+            bool AllowAddItems,
+            bool AllowFreeStyleValues)
         {
             var flow = new TableLayoutPanel();
             Panel[] panels = new Panel[]
             {
                 pnlAdd,
+                pnlFreeStyleValues,
                 pnlFilter,
                 pnlLV,
                 pnlOkCancel
@@ -201,6 +212,9 @@ namespace lallouslab.FluentLib.WinForms.Dialogs
                 if (!AllowAddItems && panel == pnlAdd)
                     continue;
 
+                if (!AllowFreeStyleValues && panel == pnlFreeStyleValues)
+                    continue;
+
                 panel.TabIndex = tabidx++;
                 foreach (Control control in panel.Controls)
                     control.TabIndex = tabidx++;
@@ -211,6 +225,12 @@ namespace lallouslab.FluentLib.WinForms.Dialogs
 
             AutoSizeMode = AutoSizeMode.GrowAndShrink;
             AutoSize = true;
+        }
+
+        public string FreeStyleText
+        {
+            get { return txtFreeStyleValues.Text; }
+            set { value = txtFreeStyleValues.Text; }
         }
 
         public string [] GetSelection()

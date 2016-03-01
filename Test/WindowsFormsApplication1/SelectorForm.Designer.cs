@@ -31,6 +31,7 @@
             this.button1 = new System.Windows.Forms.Button();
             this.btnStringsPicker1 = new System.Windows.Forms.Button();
             this.btnStringsPicker2 = new System.Windows.Forms.Button();
+            this.btnStringsPicker3 = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // button1
@@ -63,11 +64,22 @@
             this.btnStringsPicker2.UseVisualStyleBackColor = true;
             this.btnStringsPicker2.Click += new System.EventHandler(this.btnStringsPicker2_Click);
             // 
+            // btnStringsPicker3
+            // 
+            this.btnStringsPicker3.Location = new System.Drawing.Point(12, 108);
+            this.btnStringsPicker3.Name = "btnStringsPicker3";
+            this.btnStringsPicker3.Size = new System.Drawing.Size(118, 23);
+            this.btnStringsPicker3.TabIndex = 3;
+            this.btnStringsPicker3.Text = "Strings picker #3";
+            this.btnStringsPicker3.UseVisualStyleBackColor = true;
+            this.btnStringsPicker3.Click += new System.EventHandler(this.btnStringsPicker3_Click);
+            // 
             // SelectorForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(443, 297);
+            this.Controls.Add(this.btnStringsPicker3);
             this.Controls.Add(this.btnStringsPicker2);
             this.Controls.Add(this.btnStringsPicker1);
             this.Controls.Add(this.button1);
@@ -83,5 +95,6 @@
         private System.Windows.Forms.Button button1;
         private System.Windows.Forms.Button btnStringsPicker1;
         private System.Windows.Forms.Button btnStringsPicker2;
+        private System.Windows.Forms.Button btnStringsPicker3;
     }
 }

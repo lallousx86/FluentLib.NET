@@ -72,14 +72,12 @@ namespace WindowsFormsApplication1
                 Title: "Pick an item",
                 MultiSelect: true,
                 InstantFilter: true,
-                AllowAddItems: true,
                 MatchFlags: StringsPicker.MatchingFlags.Basic | StringsPicker.MatchingFlags.StartsWith | StringsPicker.MatchingFlags.RegEx,
                 DefaultMatchFlag: StringsPicker.MatchingFlags.StartsWith);
 
             if (f.ShowDialog() == DialogResult.OK)
             {
-                object[] res = f.GetSelection();
-                foreach (string s in res)
+                foreach (string s in f.GetSelection())
                     Debug.WriteLine(s);
             }
         }
@@ -101,6 +99,10 @@ namespace WindowsFormsApplication1
 
                     case "click-stringpicker2":
                         btnStringsPicker2_Click(btnStringsPicker2, e);
+                        break;
+
+                    case "click-stringpicker3":
+                        btnStringsPicker3_Click(btnStringsPicker3, e);
                         break;
 
                     default:
@@ -137,6 +139,40 @@ namespace WindowsFormsApplication1
             if (f.ShowDialog() == DialogResult.OK)
             {
                 object[] res = f.GetSelection();
+                foreach (string s in res)
+                    Debug.WriteLine(s);
+            }
+        }
+
+        private void btnStringsPicker3_Click(
+            object sender, 
+            EventArgs e)
+        {
+            var items = (new List<string>
+            {
+                "hello",
+                "world",
+                "tree hugging",
+                "human hugging",
+                "piece",
+                "peice",
+            }).ToArray();
+
+            var f = new StringsPicker(
+                Items: items,
+                Title: "Pick an item",
+                MultiSelect: true,
+                InstantFilter: true,
+                FreeStyleValuesCaption: "Enter additional values (comma separated):",
+                MatchFlags: StringsPicker.MatchingFlags.Basic | StringsPicker.MatchingFlags.StartsWith | StringsPicker.MatchingFlags.RegEx,
+                DefaultMatchFlag: StringsPicker.MatchingFlags.StartsWith);
+
+            if (f.ShowDialog() == DialogResult.OK)
+            {
+                var res = new List<string>(f.GetSelection());
+                res.AddRange(
+                    f.FreeStyleText.Split(new char[] { ',' }));
+
                 foreach (string s in res)
                     Debug.WriteLine(s);
             }
