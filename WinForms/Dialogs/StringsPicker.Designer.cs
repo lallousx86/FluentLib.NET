@@ -147,7 +147,7 @@
             this.pnlOkCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
             this.pnlOkCancel.Controls.Add(this.btnOk);
             this.pnlOkCancel.Controls.Add(this.btnCancel);
-            this.pnlOkCancel.Location = new System.Drawing.Point(3, 443);
+            this.pnlOkCancel.Location = new System.Drawing.Point(3, 472);
             this.pnlOkCancel.Name = "pnlOkCancel";
             this.pnlOkCancel.Size = new System.Drawing.Size(420, 34);
             this.pnlOkCancel.TabIndex = 2;
@@ -180,7 +180,7 @@
             this.pnlLV.Controls.Add(this.lvItems);
             this.pnlLV.Location = new System.Drawing.Point(4, 165);
             this.pnlLV.Name = "pnlLV";
-            this.pnlLV.Size = new System.Drawing.Size(420, 272);
+            this.pnlLV.Size = new System.Drawing.Size(420, 298);
             this.pnlLV.TabIndex = 7;
             // 
             // lvItems
@@ -190,7 +190,7 @@
             this.lvItems.FullRowSelect = true;
             this.lvItems.Location = new System.Drawing.Point(0, 0);
             this.lvItems.Name = "lvItems";
-            this.lvItems.Size = new System.Drawing.Size(420, 272);
+            this.lvItems.Size = new System.Drawing.Size(420, 298);
             this.lvItems.TabIndex = 7;
             this.lvItems.UseCompatibleStateImageBehavior = false;
             this.lvItems.View = System.Windows.Forms.View.List;
