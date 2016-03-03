@@ -130,14 +130,24 @@ namespace lallouslab.FluentLib.WinForms.Dialogs
         /// </summary>
         public bool InstantFilter;
 
+        public string FreeStyleText
+        {
+            get { return txtFreeStyleValues.Text; }
+            set { value = txtFreeStyleValues.Text; }
+        }
+
         public StringsPicker(
             string [] Items,
             bool MultiSelect = false,
             string Title = null,
             bool AllowAddItems = false,
+            bool AllowFilter = true,
             string FreeStyleValuesCaption = null,
             bool InstantFilter = true,
+            bool SingleColumnList = false,
             bool UseBasicLVExtensions = true,
+            int Width = -1,
+            int Height = -1,
             MatchingFlags MatchFlags = MatchingFlags.Basic,
             MatchingFlags DefaultMatchFlag = 0)
         {
@@ -164,12 +174,38 @@ namespace lallouslab.FluentLib.WinForms.Dialogs
             if (AllowFreeStyleValues)
                 lblFreeStyleValues.Text = FreeStyleValuesCaption;
 
+            //
+            // Re-layout the needed controls
+            //
             LayoutControls(
                 AllowAddItems,
+                AllowFilter,
                 AllowFreeStyleValues);
 
             m_Filter.Items = new ItemsCache(Items);
 
+            // Enable single columns by changing the view style to "Details"
+            if (SingleColumnList)
+            {
+                lvItems.View = View.Details;
+                lvItems.HeaderStyle = ColumnHeaderStyle.None;
+                lvItems.Columns.Add(new ColumnHeader()
+                {
+                    Text = "Items"
+                });
+            }
+
+            // Pass dimensions. Those dimensions are passed to the LV, howver since
+            // the form and the layout containers are autosize, then everything will shrink or grow accordingly
+            if (Width != -1)
+                pnlLV.Width = Width;
+
+            if (Height != -1)
+                pnlLV.Height = Height;
+
+            //
+            // Enable LV extensions
+            //
             if (UseBasicLVExtensions)
             {
                 ListViewExtensions.CreateCommonMenuItems(
@@ -185,6 +221,7 @@ namespace lallouslab.FluentLib.WinForms.Dialogs
 
         private void LayoutControls(
             bool AllowAddItems,
+            bool AllowFilter,
             bool AllowFreeStyleValues)
         {
             var flow = new TableLayoutPanel();
@@ -196,6 +233,7 @@ namespace lallouslab.FluentLib.WinForms.Dialogs
                 pnlLV,
                 pnlOkCancel
             };
+
             flow.AutoSize = true;
             flow.AutoSizeMode = AutoSizeMode.GrowOnly;
             flow.ColumnCount = 1;
@@ -212,6 +250,9 @@ namespace lallouslab.FluentLib.WinForms.Dialogs
                 if (!AllowAddItems && panel == pnlAdd)
                     continue;
 
+                if (!AllowFilter && panel == pnlFilter)
+                    continue;
+
                 if (!AllowFreeStyleValues && panel == pnlFreeStyleValues)
                     continue;
 
@@ -225,12 +266,6 @@ namespace lallouslab.FluentLib.WinForms.Dialogs
 
             AutoSizeMode = AutoSizeMode.GrowAndShrink;
             AutoSize = true;
-        }
-
-        public string FreeStyleText
-        {
-            get { return txtFreeStyleValues.Text; }
-            set { value = txtFreeStyleValues.Text; }
         }
 
         public string [] GetSelection()
@@ -382,6 +417,9 @@ namespace lallouslab.FluentLib.WinForms.Dialogs
                 });
             }
 
+            if (lvItems.View == View.Details)
+                lvItems.Columns[0].AutoResize(ColumnHeaderAutoResizeStyle.ColumnContent);
+
             lvItems.EndUpdate();
         }
 
@@ -396,7 +434,8 @@ namespace lallouslab.FluentLib.WinForms.Dialogs
             EventArgs e)
         {
             PopulateItems();
-            ActiveControl = txtFilter;
+            if (txtFilter.Parent.Parent != null)
+                ActiveControl = txtFilter;
         }
 
         private void ctxmenuMatchTypeClick(
@@ -436,8 +475,6 @@ namespace lallouslab.FluentLib.WinForms.Dialogs
         /// <summary>
         /// Handle key presses. ENTER to apply filter.
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
         private void txtFilter_KeyPress(
             object sender, 
             KeyPressEventArgs e)
@@ -461,8 +498,6 @@ namespace lallouslab.FluentLib.WinForms.Dialogs
             if (!string.IsNullOrEmpty(str))
                 AddItem(str);
         }
-
         #endregion
-
-    }
+   }
 }

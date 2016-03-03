@@ -163,10 +163,15 @@ namespace WindowsFormsApplication1
                 Title: "Pick an item",
                 MultiSelect: true,
                 InstantFilter: true,
+                AllowFilter: false,
+                SingleColumnList: true,
+                Width: 400,
+                Height: 700,
                 FreeStyleValuesCaption: "Enter additional values (comma separated):",
                 MatchFlags: StringsPicker.MatchingFlags.Basic | StringsPicker.MatchingFlags.StartsWith | StringsPicker.MatchingFlags.RegEx,
                 DefaultMatchFlag: StringsPicker.MatchingFlags.StartsWith);
 
+            //f.GetListView().Parent.Height = 600;
             if (f.ShowDialog() == DialogResult.OK)
             {
                 var res = new List<string>(f.GetSelection());

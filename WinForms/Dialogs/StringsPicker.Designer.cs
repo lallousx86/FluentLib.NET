@@ -65,9 +65,9 @@
             this.pnlAdd.Controls.Add(this.lblInsertText);
             this.pnlAdd.Controls.Add(this.txtInsertText);
             this.pnlAdd.Controls.Add(this.btnInsertText);
-            this.pnlAdd.Location = new System.Drawing.Point(3, 92);
+            this.pnlAdd.Location = new System.Drawing.Point(3, 131);
             this.pnlAdd.Name = "pnlAdd";
-            this.pnlAdd.Size = new System.Drawing.Size(418, 32);
+            this.pnlAdd.Size = new System.Drawing.Size(420, 32);
             this.pnlAdd.TabIndex = 0;
             // 
             // lblInsertText
@@ -85,14 +85,14 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.txtInsertText.Location = new System.Drawing.Point(36, 4);
             this.txtInsertText.Name = "txtInsertText";
-            this.txtInsertText.Size = new System.Drawing.Size(345, 20);
+            this.txtInsertText.Size = new System.Drawing.Size(347, 20);
             this.txtInsertText.TabIndex = 2;
             // 
             // btnInsertText
             // 
             this.btnInsertText.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.btnInsertText.Font = new System.Drawing.Font("Symbol", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(2)));
-            this.btnInsertText.Location = new System.Drawing.Point(387, 2);
+            this.btnInsertText.Location = new System.Drawing.Point(389, 2);
             this.btnInsertText.Name = "btnInsertText";
             this.btnInsertText.Size = new System.Drawing.Size(32, 23);
             this.btnInsertText.TabIndex = 3;
@@ -106,9 +106,9 @@
             this.pnlFilter.Controls.Add(this.lblFilter);
             this.pnlFilter.Controls.Add(this.txtFilter);
             this.pnlFilter.Controls.Add(this.btnTextFilterOption);
-            this.pnlFilter.Location = new System.Drawing.Point(3, 55);
+            this.pnlFilter.Location = new System.Drawing.Point(3, 94);
             this.pnlFilter.Name = "pnlFilter";
-            this.pnlFilter.Size = new System.Drawing.Size(418, 31);
+            this.pnlFilter.Size = new System.Drawing.Size(420, 31);
             this.pnlFilter.TabIndex = 1;
             // 
             // lblFilter
@@ -126,7 +126,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.txtFilter.Location = new System.Drawing.Point(36, 4);
             this.txtFilter.Name = "txtFilter";
-            this.txtFilter.Size = new System.Drawing.Size(345, 20);
+            this.txtFilter.Size = new System.Drawing.Size(347, 20);
             this.txtFilter.TabIndex = 5;
             this.txtFilter.TextChanged += new System.EventHandler(this.txtFilter_TextChanged);
             // 
@@ -134,7 +134,7 @@
             // 
             this.btnTextFilterOption.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.btnTextFilterOption.Font = new System.Drawing.Font("Symbol", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(2)));
-            this.btnTextFilterOption.Location = new System.Drawing.Point(387, 2);
+            this.btnTextFilterOption.Location = new System.Drawing.Point(389, 2);
             this.btnTextFilterOption.Name = "btnTextFilterOption";
             this.btnTextFilterOption.Size = new System.Drawing.Size(32, 23);
             this.btnTextFilterOption.TabIndex = 6;
@@ -147,9 +147,9 @@
             this.pnlOkCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
             this.pnlOkCancel.Controls.Add(this.btnOk);
             this.pnlOkCancel.Controls.Add(this.btnCancel);
-            this.pnlOkCancel.Location = new System.Drawing.Point(3, 404);
+            this.pnlOkCancel.Location = new System.Drawing.Point(3, 443);
             this.pnlOkCancel.Name = "pnlOkCancel";
-            this.pnlOkCancel.Size = new System.Drawing.Size(418, 34);
+            this.pnlOkCancel.Size = new System.Drawing.Size(420, 34);
             this.pnlOkCancel.TabIndex = 2;
             // 
             // btnOk
@@ -178,9 +178,9 @@
             // 
             this.pnlLV.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
             this.pnlLV.Controls.Add(this.lvItems);
-            this.pnlLV.Location = new System.Drawing.Point(4, 126);
+            this.pnlLV.Location = new System.Drawing.Point(4, 165);
             this.pnlLV.Name = "pnlLV";
-            this.pnlLV.Size = new System.Drawing.Size(418, 272);
+            this.pnlLV.Size = new System.Drawing.Size(420, 272);
             this.pnlLV.TabIndex = 7;
             // 
             // lvItems
@@ -190,7 +190,7 @@
             this.lvItems.FullRowSelect = true;
             this.lvItems.Location = new System.Drawing.Point(0, 0);
             this.lvItems.Name = "lvItems";
-            this.lvItems.Size = new System.Drawing.Size(418, 272);
+            this.lvItems.Size = new System.Drawing.Size(420, 272);
             this.lvItems.TabIndex = 7;
             this.lvItems.UseCompatibleStateImageBehavior = false;
             this.lvItems.View = System.Windows.Forms.View.List;
@@ -206,9 +206,9 @@
             this.pnlFreeStyleValues.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
             this.pnlFreeStyleValues.Controls.Add(this.lblFreeStyleValues);
             this.pnlFreeStyleValues.Controls.Add(this.txtFreeStyleValues);
-            this.pnlFreeStyleValues.Location = new System.Drawing.Point(4, 2);
+            this.pnlFreeStyleValues.Location = new System.Drawing.Point(4, 41);
             this.pnlFreeStyleValues.Name = "pnlFreeStyleValues";
-            this.pnlFreeStyleValues.Size = new System.Drawing.Size(418, 47);
+            this.pnlFreeStyleValues.Size = new System.Drawing.Size(420, 47);
             this.pnlFreeStyleValues.TabIndex = 8;
             // 
             // lblFreeStyleValues
@@ -227,7 +227,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.txtFreeStyleValues.Location = new System.Drawing.Point(0, 24);
             this.txtFreeStyleValues.Name = "txtFreeStyleValues";
-            this.txtFreeStyleValues.Size = new System.Drawing.Size(418, 20);
+            this.txtFreeStyleValues.Size = new System.Drawing.Size(420, 20);
             this.txtFreeStyleValues.TabIndex = 2;
             // 
             // StringsPicker
@@ -235,7 +235,7 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoSize = true;
-            this.ClientSize = new System.Drawing.Size(424, 441);
+            this.ClientSize = new System.Drawing.Size(426, 518);
             this.Controls.Add(this.pnlFreeStyleValues);
             this.Controls.Add(this.pnlAdd);
             this.Controls.Add(this.pnlFilter);
