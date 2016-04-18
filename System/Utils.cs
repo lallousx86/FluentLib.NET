@@ -24,8 +24,11 @@
 * SUCH DAMAGE.
 * ----------------------------------------------------------------------------- 
 */
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Runtime.Serialization.Formatters.Binary;
+using System.Text.RegularExpressions;
 
 namespace lallouslab.FluentLib.Sys
 {
@@ -69,6 +72,54 @@ namespace lallouslab.FluentLib.Sys
 
                 return (T)formatter.Deserialize(ms);
             }
+        }
+    }
+
+    public class ParseArgsClass
+    {
+        private string Arguments;
+        Dictionary<string, string> args;
+
+        public ParseArgsClass(string Args)
+        {
+            Arguments = Args;
+        }
+
+        public int Parse()
+        {
+            // http://www.codeproject.com/Articles/3111/C-NET-Command-Line-Arguments-Parser
+            var regex = new Regex(@"(\s(-{1,2}|/)(?<key>\w+)([:=]?((['""](?<value>.*?)['""])|(?<value>\S+))?))");
+            var matches = regex.Matches(Arguments);
+
+            args = matches.Cast<Match>().ToDictionary(
+                match => match.Groups["key"].Value,
+                match => match.Groups["value"].Success ? match.Groups["value"].Value : null);
+
+            return args.Count;
+        }
+
+        public string GetStringArg(
+            string OptionName,
+            string DefVal = "")
+        {
+            string Val;
+            return args.TryGetValue(OptionName, out Val) ? Val : DefVal;
+        }
+
+        public bool GetBoolArg(
+            string OptionName,
+            bool bDefault = true)
+        {
+            int val;
+            return (args.ContainsKey(OptionName) && int.TryParse(args[OptionName], out val)) ? val != 0 : bDefault;
+        }
+
+        public int GetIntArg(
+            string OptionName,
+            int DefVal = 0)
+        {
+            int val;
+            return (args.ContainsKey(OptionName) && int.TryParse(args[OptionName], out val)) ? val : DefVal;
         }
     }
 }
