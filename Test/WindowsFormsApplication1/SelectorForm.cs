@@ -182,5 +182,17 @@ namespace WindowsFormsApplication1
                     Debug.WriteLine(s);
             }
         }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            var frm = new ListViewTestForm();
+            frm.ShowDialog();
+        }
+
+        private void button3_Click(object sender, EventArgs e)
+        {
+            var frm = new TreeViewTestForm();
+            frm.ShowDialog();
+        }
     }
 }
