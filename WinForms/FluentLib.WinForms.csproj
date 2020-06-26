@@ -61,6 +61,7 @@
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Controls\CheckboxComboBox\PopupComboBox.Designer.cs" />
+    <Compile Include="Controls\RichTextBox\FastRichTextBox.cs" />
     <Compile Include="Dialogs\NamedItemsColorPicker.cs">
       <SubType>Form</SubType>
     </Compile>

@@ -1,5 +1,5 @@
 ﻿/* ----------------------------------------------------------------------------- 
-* .NET FluentLib - Copyright (c) Elias Bachaalany <lallousz-x86@yahoo.com>
+* .NET FluentLib - Copyright (c) Elias Bachaalany <elias.bachaalany@gmail.com>
 * All rights reserved.
 * 
 * Redistribution and use in source and binary forms, with or without
